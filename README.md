@@ -24,10 +24,10 @@ assumptions and interpret or even extend the scenario as you go. Use your imagin
 you see fit but you must clearly document all assumptions and extensions.
 
 ## Tasks
-[] - Produce an Entity-Relationship Model for the scenario described above
-[] - Design a set of relations conforming to Boyce-Codd Normal Form (BCNF)
-[] - Implement your final database design.
-[] - Query your database.
-[] - Optimize your Database
-[] - Secure your Database
-[] - Building a Web Interface
+[ ] - Produce an Entity-Relationship Model for the scenario described above
+[ ] - Design a set of relations conforming to Boyce-Codd Normal Form (BCNF)
+[ ] - Implement your final database design.
+[ ] - Query your database.
+[ ] - Optimize your Database
+[ ] - Secure your Database
+[ ] - Building a Web Interface
