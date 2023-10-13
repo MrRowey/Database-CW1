@@ -7,53 +7,53 @@ USE History;
 
 
 ----- User & Staff -----
-Create TABLE Account (
-    id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL
+CREATE TABLE 'Account' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    'username' VARCHAR(50) NOT NULL,
+    'password' VARCHAR(50) NOT NULL
 );
 
-create TABLE Country (
-    id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    country VARCHAR(50) NOT NULL
+CREATE TABLE 'Country' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    'country' VARCHAR(50) NOT NULL
 );
 
-Create TABLE Address (
-    id INT(10) NOT NULL AUTO_INCREMENT,
-    addressLine1 VARCHAR(50) NOT NULL,
-    street VARCHAR(50) NOT NULL,
-    city VARCHAR(50) NOT NULL,
-    county VARCHAR(50) NOT NULL,
-    postcode VARCHAR(10) NOT NULL,
-    country_id INT(10) NOT NULL,
+CREATE TABLE 'Address' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT,
+    'addressLine1' VARCHAR(50) NOT NULL,
+    'addressLine2' VARCHAR(50) NOT NULL,
+    'city' VARCHAR(50) NOT NULL,
+    'county' VARCHAR(50) NOT NULL,
+    'postcode' VARCHAR(10) NOT NULL,
+    'country_id' INT(10) NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY (country_id) REFERENCES Country(id)
 );
 
-Create TABLE Job_Role (
-    id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    role VARCHAR(50) NOT NULL
+CREATE TABLE 'Job_Role' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    'role' VARCHAR(50) NOT NULL
 );
 
-Create TABLE Name (
-    id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    forname VARCHAR(50) NOT NULL,
-    surname VARCHAR(50) NOT NULL
+CREATE TABLE 'Name' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    'forname' VARCHAR(50) NOT NULL,
+    'surname' VARCHAR(50) NOT NULL
 );
 
-Create TABLE Contact_Details (
-    id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    homePhone int(20) NOT NULL,
-    mobilePhone int(20) NOT NULL,
-    email VARCHAR(50) NOT NULL
+CREATE TABLE 'Contact_Details' (
+    'id' INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    'homePhone' int(20) NOT NULL,
+    'mobilePhone' int(20) NOT NULL,
+    'email' VARCHAR(50) NOT NULL
 )
 
-CREATE TABLE Customer (
-    id INT(10) NOT NUll AUTO_INCREMENT,
-    name_id INT(10) NOT NULL,
-    contactDetails_id INT(10) NOT NUll,
-    address_id INT(10) NOT NUll,
-    account_id INT(10) NOT NULL,
+CREATE TABLE 'Customer' (
+    'id' INT(10) NOT NUll AUTO_INCREMENT,
+    'name_id' INT(10) NOT NULL,
+    'contactDetails_id' INT(10) NOT NUll,
+    'address_id' INT(10) NOT NUll,
+    'account_id' INT(10) NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY (name_id) REFERENCES Name(id),
     FOREIGN KEY (contactDetails_id) REFERENCES Contact_Details(id),
@@ -61,13 +61,13 @@ CREATE TABLE Customer (
     FOREIGN KEY (account_id) REFERENCES Account(id)
 );
 
-CREATE TABLE Staff (
-    id INT(10) Not Null AUTO_INCREMENT,
-    name_id INT(10) NOT NULL ,
-    contactDetails_id INT(10) NOT NUll,
-    address_id INT(10) NOT NUll,
-    account_id INT(10) NOT NULL,
-    jobRole_id int(10) NOT NULL,
+CREATE TABLE 'Staff' (
+    'id' INT(10) Not Null AUTO_INCREMENT,
+    'name_id' INT(10) NOT NULL ,
+    'contactDetails_id' INT(10) NOT NUll,
+    'address_id' INT(10) NOT NUll,
+    'account_id' INT(10) NOT NULL,
+    'jobRole_id' int(10) NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY (name_id) REFERENCES Name(id),
     FOREIGN KEY (contactDetails_id) REFERENCES Contact_Details(id),
