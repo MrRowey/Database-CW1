@@ -1,3 +1,185 @@
+DROP DATABASE IF EXISTS stepintohistory;
+CREATE DATABASE IF NOT EXISTS stepintohistory;
+USE stepintohistory;
+
+CREATE TABLE title (
+    title_id int PRIMARY KEY AUTO_INCREMENT,
+    titlename varchar(50) NOT NULL
+);
+
+INSERT INTO  title (titlename) VALUES ('Mr');
+INSERT INTO  title (titlename) VALUES ('Ms');
+INSERT INTO  title (titlename) VALUES ('Miss');
+INSERT INTO  title (titlename) VALUES ('Mrs');
+
+
+CREATE TABLE name (
+    name_id int PRIMARY KEY AUTO_INCREMENT,
+    forname varchar(50),
+    surname varchar(50)
+);
+
+CREATE TABLE address (
+    address_id int PRIMARY KEY AUTO_INCREMENT,
+    addressline1 varchar(50) NOT NULL,
+    addressline2 varchar(50),
+    city varchar(50) NOT NULL,
+    county varchar(50) NOT NULL,
+    postcode varchar(10) NOT NULL
+);
+
+CREATE TABLE contactdetails (
+    ContactDetails_ID int PRIMARY KEY AUTO_INCREMENT,
+    HomePhone int(20),
+    MobilePhone int(20),
+    Email VARCHAR(50)
+);
+
+CREATE TABLE jobrole (
+    Account_ID int PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50),
+    Password VARCHAR(50)
+);
+
+CREATE TABLE customer (
+  customer_ID Int PRIMARY KEY AUTO_INCREMENT,
+  Title varchar(5) NOT NULL,
+  Name varchar(50) NOT NULL,
+  Address int NOT NULL,
+  Contact int NOT NULL,
+  Account_ID int NOT NUll
+);
+
+CREATE TABLE library (
+    library_id int PRIMARY KEY AUTO_INCREMENT,
+    book int NOT NULL,
+    document int NOT NULL
+);
+
+CREATE TABLE Book (
+    book_id int PRIMARY KEY AUTO_INCREMENT,
+    title varchar(50) NOT NULL,
+    author int NOT NULL,
+    genre int NOT NULL,
+    description varchar(50) NOT NULL,
+    year year NOT NULL,
+    price decimal(10,2) NOT NULL,
+);
+
+CREATE TABLE Author (
+    author_id int PRIMARY KEY AUTO_INCREMENT,
+    name int NOT NULL
+);
+
+CREATE TABLE Genre (
+    genre_id int PRIMARY KEY AUTO_INCREMENT,
+    genre varchar(50) NOT NULL
+);
+
+CREATE TABLE Document (
+    document_id int PRIMARY KEY AUTO_INCREMENT,
+    title varchar(50) NOT NULL,
+    author int NOT NULL,
+    description varchar(50) NOT NULL,
+    year year(4) NOT NULL,
+    price decimal(10,2) NOT NULL
+);
+
+CREATE TABLE account (
+    account_id int PRIMARY KEY AUTO_INCREMENT,
+    username varchar(50) NOT NULL,
+    password varchar(50) NOT NULL,
+    administrator boolean
+);
+
+CREATE TABLE order (
+    order_id int PRIMARY KEY AUTO_INCREMENT,
+    product int NOT NULL,
+    date date NOT NULL
+);
+
+CREATE TABLE guidedtour (
+    tour_id int PRIMARY KEY AUTO_INCREMENT,
+    title varchar(100) NOT NULL,
+    date date NOT NULL,
+    time time NOT NULL,
+    duration time NOT NULL,
+    price decimal(10,2) NOT NULL,
+    capacity int NOT NULL,
+    location int NOT NULL,
+    description varchar(100) NOT NULL
+);
+
+CREATE TABLE privatelecture (
+    lecture_id int PRIMARY KEY AUTO_INCREMENT,
+    topic varchar(50) NOT NULL,
+    description varchar(255) NOT NULL,
+    date date NOT NULL,
+    time time NOT NULL,
+    bookingfee decimal(10,2) NOT NULL,
+);
+
+CREATE TABLE workshopandcourse (
+    workshopandcourse_id int PRIMARY KEY AUTO_INCREMENT,
+    title varchar(50) NOT NULL,
+    description varchar(255) NOT NULL,
+    date date NOT NULL,
+    time time NOT NULL,
+    duration time NOT NULL,
+    price decimal(10,2) NOT NULL,
+    capacity int NOT NULL,
+);
+
+CREATE TABLE dnatesting (
+    dnatesting_id int PRIMARY KEY AUTO_INCREMENT,
+    date datetime NOT NULL,
+    price decimal(10,2) NOT NULL,
+    serviceaccess int NOT NULL
+);
+
+CREATE TABLE familytree (
+    familytree_id int PRIMARY KEY AUTO_INCREMENT,
+    date datetime NOT NULL,
+    price decimal(10,2) NOT NULL,
+    serviceaccess int NOT NULL
+);
+
+CREATE TABLE product (
+    product_id int PRIMARY KEY AUTO_INCREMENT,
+    producename varchar(50) NOT NULL
+);
+
+CREATE TABLE subscription (
+    subscription_id int PRIMARY KEY AUTO_INCREMENT,
+    issusedate date NOT NULL,
+    deliverytype int NOT NULL,
+    cost decimal(10,2) NOT NULL,
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------- Steping into History DB --------------------
 
 -- Destroy and Create DB --

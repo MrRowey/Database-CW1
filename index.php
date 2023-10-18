@@ -1,6 +1,6 @@
 <?php
     // Connecting to the database
-    $conn = mysqli_connect("localhost", "root", "", "steppingintohistory");
+    $conn = mysqli_connect("localhost", "basic", "sKWnTXv5)2]C(7yq", "stepintohistory");
 
     // Checking if the connection was successful
     if(mysqli_connect_errno()) {
@@ -27,12 +27,6 @@
             echo "<p> Incorret Username or Password </p>";
         }
     }
-
-
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,7 +59,7 @@
         <div class="info">
             <h2>More infomation</h2>
             <p>If you dont have an account either created one or return back to the main site.</p>
-            <a href=""><button class="button">Create Account</button></a>
+            <a href="accountcreation.php"><button class="button">Create Account</button></a>
             <a href=""><button class="button">Learn More</button></a>
         </div>
 
