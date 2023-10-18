@@ -26,8 +26,8 @@ CREATE TABLE 'Address' (
     'county' VARCHAR(50) NOT NULL,
     'postcode' VARCHAR(10) NOT NULL,
     'country_id' INT(10) NOT NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY (country_id) REFERENCES Country(id)
+    PRIMARY KEY('id'),
+    FOREIGN KEY ('country_id') REFERENCES 'Country'('id')
 );
 
 CREATE TABLE 'Job_Role' (
@@ -54,11 +54,11 @@ CREATE TABLE 'Customer' (
     'contactDetails_id' INT(10) NOT NUll,
     'address_id' INT(10) NOT NUll,
     'account_id' INT(10) NOT NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY (name_id) REFERENCES Name(id),
-    FOREIGN KEY (contactDetails_id) REFERENCES Contact_Details(id),
-    FOREIGN KEY (address_id) REFERENCES Address(id),
-    FOREIGN KEY (account_id) REFERENCES Account(id)
+    PRIMARY KEY('id'),
+    FOREIGN KEY ('name_id') REFERENCES Name('id'),
+    FOREIGN KEY ('contactDetails_id') REFERENCES 'Contact_Details'('id'),
+    FOREIGN KEY ('address_id') REFERENCES Address('id'),
+    FOREIGN KEY ('account_id') REFERENCES 'Account'('id')
 );
 
 CREATE TABLE 'Staff' (
@@ -68,12 +68,12 @@ CREATE TABLE 'Staff' (
     'address_id' INT(10) NOT NUll,
     'account_id' INT(10) NOT NULL,
     'jobRole_id' int(10) NOT NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY (name_id) REFERENCES Name(id),
-    FOREIGN KEY (contactDetails_id) REFERENCES Contact_Details(id),
-    FOREIGN KEY (address_id) REFERENCES Address(id),
-    FOREIGN KEY (account_id) REFERENCES Account(id),
-    FOREIGN KEY (jobRole_id) REFERENCES Job_Role(id)
+    PRIMARY KEY('id'),
+    FOREIGN KEY ('name_id') REFERENCES Name('id'),
+    FOREIGN KEY ('contactDetails_id') REFERENCES 'Contact_Details'('id'),
+    FOREIGN KEY ('address_id') REFERENCES Address('id'),
+    FOREIGN KEY ('account_id') REFERENCES 'Account'('id'),
+    FOREIGN KEY ('jobRole_id') REFERENCES 'Job_Role'('id')
 );
 
 
