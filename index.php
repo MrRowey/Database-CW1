@@ -1,8 +1,9 @@
 <?php
     // Connecting to the database
-    $conn = mysqli_connect("localhost", "basic", "sKWnTXv5)2]C(7yq", "stepintohistory");
+    $conn = mysqli_connect("localhost", "basic", "SLX3B5T-HMV0YhK-", "stepintohistory");
 
     // Checking if the connection was successful
+    
     if(mysqli_connect_errno()) {
         echo "Failed to connect to MySQL: " . mysqli_connect_error();
     }

@@ -28,6 +28,17 @@ CREATE TABLE address (
     postcode varchar(10) NOT NULL
 );
 
+CREATE TABLE countries (
+    country_id int PRIMARY KEY AUTO_INCREMENT,
+    countryname varchar(50) NOT NULL
+);
+
+INSERT INTO countries (countryname) VALUES ('England');
+INSERT INTO countries (countryname) VALUES ('Scotland');
+INSERT INTO countries (countryname) VALUES ('Wales');
+INSERT INTO countries (countryname) VALUES ('Northern Ireland');
+
+
 CREATE TABLE contactdetails (
     ContactDetails_ID int PRIMARY KEY AUTO_INCREMENT,
     HomePhone int(20),
@@ -36,9 +47,8 @@ CREATE TABLE contactdetails (
 );
 
 CREATE TABLE jobrole (
-    Account_ID int PRIMARY KEY AUTO_INCREMENT,
-    Username VARCHAR(50),
-    Password VARCHAR(50)
+    job_ID int PRIMARY KEY AUTO_INCREMENT,
+    jobtitle VARCHAR(50)
 );
 
 CREATE TABLE customer (
