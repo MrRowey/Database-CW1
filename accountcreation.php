@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -12,70 +13,42 @@ if($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
 }
 
-$titleSQL = "SELECT * FROM `title`";
-$titleresult = mysqli_query($conn, $titleSQL);
+echo "button not pressed";
 
-$countrySQL = "SELECT * FROM `countries`";
-$countryresult = mysqli_query($conn, $countrySQL);
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+        echo "button pressed";
 
-
-if ($_SERVER["REQUEST_METHOD"] == "GET"){
-        // User Info
-        $title = $_REQUEST['titleselect'];
-
-        $fname = $_REQUEST['fname'];
-
-        $sname = $_REQUEST['sname'];
-
-        $address = $_REQUEST['addr'];
-
-        $address2 = $_REQUEST['addr2'];
-
-        $city = $_REQUEST['city'];
-
-        $country = $_REQUEST['country'];
-
-        $postcode = $_REQUEST['postcode'];
-
-        $hnumber = $_REQUEST['h-num'];
-
-        $mnumber = $_REQUEST['m-num'];
-
-        $email = $_REQUEST['email'];
-
-
-        // Account Info
-        $username = $_REQUEST['uname'];
-
-        $password = $_REQUEST['pwrd'];
-
-        $cpassword = $_REQUEST['pwrdck'];
-
-
-        if($password != $cpassword){
-            echo "Passwords do not match";
-        } else {
-            $hashpass = md5($password);
+        if(isset($_POST['Submit']) && empty($_POST['username']) && empty($_POST['password']) && empty($_POST['passwordcheck'])){
+            echo "Please fill out all the fields";
         }
+        else {
+            $username = $_REQUEST['username'];
+            $password = $_REQUEST['password'];
+            $chkpassword = $_REQUEST['passwordcheck'];
 
-        //$sqltemp = "INSERT INTO name (forname, surname) VALUES ('$fname', '$sname')";
+            // Check if the passwords match if not then display error if they do then hash the password
+            if($password != $chkpassword){
+                echo "Passwords do not match";
+            } else {
+                $hashpass = md5($password);
+            }
 
-        $sql = "INSERT INTO customer, name, address, contactdetails, account (title, forname, surname, addressline1, addressline2, city, county, postcode, homephone, mobilephone, email, username, password) VALUES ('$title', name_id, address_id, contactdetails_id, account_id, '$fname', '$sname', '$address', '$address2', '$city', '$country', '$postcode', '$hnumber', '$mnumber', '$email', '$username', '$hashpass')";
+            // Create a session with the username
+            $_SESSION['username'] = $username;
 
-        //if(empty($cpassword)){
-        //    echo "Please enter all required fields";
-        //} else {
-        //    echo $cpassword;
-        //}
+            // Create the sql command
+            $sql = "INSERT INTO account (username, password) VALUES ('$username', '$hashpass')";
 
-        // Running the sql command
-        if($conn->query($sql) === TRUE) {
-            echo "New recored ha sbeen created";
-        } else {
-            echo "Erro: " . $sql . "<br>" . $conn->error;
+
+            // Running the sql command
+            if($conn->query($sql) === TRUE) {
+                echo "New recored ha sbeen created";
+                header("Location: accountDetials.php");
+            } else {
+                echo "Erro: " . $sql . "<br>" . $conn->error;
+            }
         }
-
-        $conn->close();
+    $conn->close();
 }
 ?>
 <!doctype html>
@@ -100,115 +73,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
             <h1> Stepping into History Account creation </h1>
         </header>
 
-        <form class="row g-3" action="accountcreation.php" method="get">
-            <h2>Personal Infomation</h2>
-            
-            <!-- Title -->
-            <div class="col-md-2">
-                <label class="form-label" for="titleselect">Title:</label>
-                <select class="form-select" id="titleselect" name="titleselect" required>
-                    <option disabled selected>Title</option>
-                    <?php while($row = mysqli_fetch_array($titleresult)){
-                        echo '<option value="'.$row['title_id'].'">'.$row['titlename'].'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <!-- Forname -->
-            <div class="col-md-5">
-                <label for="fname" class="form-label">First Name</label>
-                <input type="text" name="fname" id="Forname" class="form-control" required >
-            </div>
-
-            <!-- Surname -->
-            <div class="col-md-5">
-                <label for="sname" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="fname" name="sname" required >
-            </div>
-
-            <h2> Address </h2>
-
-            <!-- Address -->
-            <div class="col-12">
-                <label for="address" class="form-label">Address</label>
-                <input type="text" class="form-control" id="address" name="addr"  >
-            </div>
-
-            <!-- Address2 -->
-            <div class="col-12">
-                <label for="address2" class="form-label">Address 2</label>
-                <input type="text" class="form-control" id="address2" name="addr2">
-            </div>
-
-            <!-- City -->
-            <div class="col-md-6">
-                <label for="city" class="form-label">City</label>
-                <input type="text" class="form-control" id="city" name="city"  >
-            </div>
-
-            <!-- Country -->
-            <div class="col-md-4">
-                <label for="country" class="form-label">Country</label>
-                <select id="country" class="form-select" name="country"  >
-                  <option selected disabled>Select Country</option>
-                  <?php while($row = mysqli_fetch_array($countryresult)){
-                        echo '<option value="'.$row['country_id'].'">'.$row['countryname'].'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <!-- Postcode -->
-            <div class="col-md-2">
-                <label for="inputZip" class="form-label">Zip/PostCode</label>
-                <input type="text" class="form-control" id="postcode" name="postcode"  >
-            </div>
-
-            <!-- Contact -->
-            <h2>Contact Infomation</h2>
-
-            <!-- Home Number -->
-            <div class="col-md-4">
-                <label for="hnumber" class="form-label">Home Number</label>
-                <input type="number" class="form-control" id="hnumber" name="h-num"> 
-            </div>
-
-            <!-- Mobile Number -->
-            <div class="col-md-4">
-                <label for="mnumber" class="form-label">Mobile Number</label>
-                <input type="number" class="form-control" id="mnumber" name="m-num"  >
-            </div>
-
-            <!-- Email -->
-            <div class="col-md-4">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email"  >
-            </div>
-
+        <form class="row g-3" action="accountCreation.php" method="POST">
             <!-- Account -->
             <h2>Account Creation</h2>
 
             <!-- Username -->
-            <div class="col-md-4">
                 <label for="usernmae" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="uname"  >
-            </div>
-
+                <input style="width:50%" type="text" class="form-control" id="username" name="username" require>
             <!-- Password -->
-            <div class="col-md-4">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="pwrd"  >
-            </div>
-
+                <input style="width:50%" type="password" class="form-control" id="password" name="password" require >
             <!-- Confirm Password -->
-            <div class="col-md-4">
                 <label for="cpassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="cpassword" name="pwrdck"  >
-            </div>
+                <input style="width:50%" type="password" class="form-control" id="cpassword" name="passwordcheck" require >
 
             <div class="col-12">
-                <button type="submit" value="Submit" class="btn btn-primary">Create Account</button>
+                <button type="submit" value="Submit" name="Submit" class="btn btn-primary">Create Account</button>
             </div>
         </form>
     </div>

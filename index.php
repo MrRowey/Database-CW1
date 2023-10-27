@@ -1,16 +1,20 @@
 <?php
-    // Connecting to the database
-    $conn = mysqli_connect("localhost", "basic", "SLX3B5T-HMV0YhK-", "stepintohistory");
+    // DB Credentials 
+    $servername = "localhost";
+    $username = "Basic";
+    $password = "SLX3B5T-HMV0YhK-";
+    $dbname = "stepintohistory";
+
+    // Establishing connection to the database
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
     // Checking if the connection was successful
-    
-    if(mysqli_connect_errno()) {
-        echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    if($conn->connect_error){
+        die("Connection failed: " . $conn->connect_error);
     }
-    
 
     // Checking if the user has submitted the form and if thier is any information enterd
-    if (isset($_GET['username'])){
+    if (isset($_POST['username'])){
         $username = stripcslashes($_REQUEST['username']);
         $username = mysqli_real_escape_string($conn, $username);
 
@@ -22,7 +26,7 @@
         $rows = mysqli_num_rows($result);
         if($rows == 1){
             $_SESSION['username'] = $username;
-            header("Location: index.php");
+            header("Location: splashscreen.html");
         }
         else{
             echo "<p> Incorret Username or Password </p>";
