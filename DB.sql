@@ -170,7 +170,11 @@ CREATE TABLE subscription (
 
 
 
-
+CREATE TABLE serviceAccses (
+    serviceAccses_ID INT(11) NOT NULL AUTO_INCREMENT,
+    serviceAccses VARCHAR(15) NOT NULL,
+    PRIMARY KEY (serviceAccses_ID)
+);
 
 
 

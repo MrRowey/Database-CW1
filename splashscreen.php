@@ -1,0 +1,112 @@
+<?php
+
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/splashscreen.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <header class="loginheader">
+            <h1> Stepping into History </h1>
+        </header>
+
+        <div class="services">
+            <div class="service-1">
+                <div class="info">
+                    <h3 class="center">Guided Tour</h3>
+                    <p class="center">Visit Famous Historucal Sites, buildign and Battlefields from across the globe.!</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/user/tour.php">View</a>
+                </div>
+            </div>
+            <div class="service-2">
+                <div class="info">
+                    <h3 class="center">Private Hire</h3>
+                    <p class="center">Book a World Famouse Historian to come to your provate functuion as a guese speaker.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/user/privatehire.php">View</a>
+                </div>
+            </div>
+            <div class="service-3">
+                <div class="info">
+                    <h3 class="center">Family Tree Service</h3>
+                    <p class="center">Want to know who is your long lost relitve out expers can help you on your famliy tree journy.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/user/familytree.php">View</a>
+                </div>
+            </div>
+            <div class="service-4">
+                <div class="info">
+                    <h3 class="center">Genom Mapping Service</h3>
+                    <p class="center">Want to know where your blood line come from out Genom mapping serivce alows you so see where you come from.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/user/genom.php">View</a>
+                </div>
+            </div>
+            <div class="service-5">
+                <div class="info">
+                    <h3 class="center"> Workshop & Courses</h3>
+                    <p class="center">We offer Histotical and archilocoal skills for all agaes though our workshops and course.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/pages/workshop.php">View</a>
+                </div>
+            </div>
+            <div class="service-6">
+                <div class="info">
+                    <h3 class="center">Document and Book Search</h3>
+                    <p class="center">Looking for a certain book or Document, we got you our Serche system checks from accross the globe!</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/pages/search.php">View</a>
+                </div>
+            </div>
+            <div class="service-7">
+                <div class="info">
+                    <h3 class="center">Online Store</h3>
+                    <p class="center">Via our online Store your able to purchas books as well as our quarly histiry magasisne subscription.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/pages/store.php">View</a>
+                </div>
+            </div>
+            <div class="service-8">
+                <div class="info">
+                    <h3 class="center">My Orders</h3>
+                    <p class="center">Check all you previos orders that you have place from books to tours/services.</p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/pages/myorders.php">View</a>
+                </div>
+            </div>
+            <div class="service-9">
+                <div class="info">
+                    <h3 class="center">My Information</h3>
+                    <p class="center">Here you can see all you Information as well as update any detialis if needed.
+                    </p>
+                </div>
+                <div class="link">
+                    <a class="button" href="/pages/myinfo.php">View</a>
+                </div>
+            </div>
+        </div>
+        <div class="center">
+            <form action="scripts/logout.php">
+                <input type="submit" value="Log Out" class="btn btn-primary btn-lg" />
+            </form>
+        </div>
+    </div>
+</body>
+</html>

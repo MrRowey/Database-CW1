@@ -14,24 +14,51 @@
     }
 
     // Checking if the user has submitted the form and if thier is any information enterd
-    if (isset($_POST['username'])){
-        $username = stripcslashes($_REQUEST['username']);
-        $username = mysqli_real_escape_string($conn, $username);
 
-        $password = stripcslashes($_REQUEST['password']);
-        $password = mysqli_real_escape_string($conn, $password);
+    if ($_SERVER["REQUEST_METHOD"] == "POST"){
 
-        $query = "SELECT * from `account` WHERE username=`$username` and password=`" . md5($password) . "`";
-        $result = mysqli_query($conn, $query);
-        $rows = mysqli_num_rows($result);
-        if($rows == 1){
-            $_SESSION['username'] = $username;
-            header("Location: splashscreen.html");
+        if(isset($_POST['Submit']) && empty($_POST['username']) && empty($_POST['password'])){
+            echo "Please fill out all the fields";
         }
-        else{
-            echo "<p> Incorret Username or Password </p>";
-        }
-    }
+        else {
+            $username = $_REQUEST['username'];
+            $password = $_REQUEST['password'];
+            
+            $hashpass = "SELECT password FROM account where username = '$username'";
+
+            echo $hashpass;
+
+
+            $passtest = password_verify($password, $hashpass);
+
+            if($passtest == TRUE){
+                echo "Password is correct";
+            } else {
+                echo "Password is incorrect";
+            }
+
+
+        };
+    };
+
+    //if (isset($_POST['username'])){
+    //    $username = stripcslashes($_REQUEST['username']);
+    //    $username = mysqli_real_escape_string($conn, $username);
+//
+    //    $password = stripcslashes($_REQUEST['password']);
+    //    $password = mysqli_real_escape_string($conn, $password);
+//
+    //    $query = "SELECT * from `account` WHERE username=`$username` and password=`" . md5($password) . "`";
+    //    $result = mysqli_query($conn, $query);
+    //    $rows = mysqli_num_rows($result);
+    //    if($rows == 1){
+    //        $_SESSION['username'] = $username;
+    //        header("Location: splashscreen.html");
+    //    }
+    //    else{
+    //        echo "<p> Incorret Username or Password </p>";
+    //    }
+    //}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +70,6 @@
 </head>
 <body>
     <div class="container">
-
         <header class="loginheader">
             <h1>
                 Stepping into History
@@ -51,11 +77,13 @@
         </header>
 
         <div class="login">
-            <form class="form" action="">
-                <h2 class="formheader">Please Login</h2>
-                <input class="emailinput" type="email" name="email" id="email" placeholder="name@example.com">
+            <form class="form" action="index.php" method="get">
+                <h2 class="formheader"><u>Login</u></h2><br>
+                <label class="lable" for="username"> Username</label>
+                <input class="usernameinput" type="text" name="text" id="username" require>
                 <br>
-                <input class="passwordinput" type="password" name="password" id="password" placeholder="Password123">
+                <label class="lable" for="password"> Password</label>
+                <input class="passwordinput" type="password" name="password" id="password" require>
                 <br>
                 <input class="loginbutton" type="submit" value="Login">
             </form>

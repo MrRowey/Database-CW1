@@ -1,5 +1,4 @@
 <?php
-session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -13,41 +12,33 @@ if($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
 }
 
-echo "button not pressed";
+if (isset($_POST['Submit']) && ($_SERVER["REQUEST_METHOD"] == "GET")){
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
-        echo "button pressed";
+    if(empty($_GET['username']) && empty($_GET['password'])){
+        echo "Not all Field are Filled in";
 
-        if(isset($_POST['Submit']) && empty($_POST['username']) && empty($_POST['password']) && empty($_POST['passwordcheck'])){
-            echo "Please fill out all the fields";
+    }
+    else {
+        echo "fields are filled in";
+
+        $username = $_GET['username'];
+        $password = $_GET['password'];
+        echo "fields are filled in";
+        $hashpass = md5($password);
+        echo "password has been hashed";
+        
+        $sql = "INSERT INTO account (username, password) VALUES ('$username', '$hashpass')";
+        session_start();
+        $_SESSION['username'] = $username;
+
+        if($conn->query($sql) === TRUE){
+            echo "New recored ha sbeen created";
+            $username = $password = "";
+            header("Location: accountDetials.php");
+        } else {
+            echo "Erro: " . $sql . "<br>" . $conn->error;
         }
-        else {
-            $username = $_REQUEST['username'];
-            $password = $_REQUEST['password'];
-            $chkpassword = $_REQUEST['passwordcheck'];
-
-            // Check if the passwords match if not then display error if they do then hash the password
-            if($password != $chkpassword){
-                echo "Passwords do not match";
-            } else {
-                $hashpass = md5($password);
-            }
-
-            // Create a session with the username
-            $_SESSION['username'] = $username;
-
-            // Create the sql command
-            $sql = "INSERT INTO account (username, password) VALUES ('$username', '$hashpass')";
-
-
-            // Running the sql command
-            if($conn->query($sql) === TRUE) {
-                echo "New recored ha sbeen created";
-                header("Location: accountDetials.php");
-            } else {
-                echo "Erro: " . $sql . "<br>" . $conn->error;
-            }
-        }
+    }
     $conn->close();
 }
 ?>
@@ -73,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             <h1> Stepping into History Account creation </h1>
         </header>
 
-        <form class="row g-3" action="accountCreation.php" method="POST">
+        <form class="row g-3" action="accountCreation.php" method="GET">
             <!-- Account -->
             <h2>Account Creation</h2>
 
@@ -83,9 +74,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             <!-- Password -->
                 <label for="password" class="form-label">Password</label>
                 <input style="width:50%" type="password" class="form-control" id="password" name="password" require >
-            <!-- Confirm Password -->
-                <label for="cpassword" class="form-label">Confirm Password</label>
-                <input style="width:50%" type="password" class="form-control" id="cpassword" name="passwordcheck" require >
 
             <div class="col-12">
                 <button type="submit" value="Submit" name="Submit" class="btn btn-primary">Create Account</button>

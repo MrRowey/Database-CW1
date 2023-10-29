@@ -1,7 +1,7 @@
 <?php
-session_start();
 
 // Session Variables
+session_start();
 $username = $_SESSION['username'];
 
 // Db Credentials
@@ -18,16 +18,6 @@ if($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
 }
 
-// turn off autocommit
-$conn->autocommit(FALSE);
-
-
-
-
-// Getting title from db
-$titleSQL = "SELECT * FROM `title`";
-$titleresult = mysqli_query($conn, $titleSQL);
-
 // Getting country from db
 $countrySQL = "SELECT * FROM `countries`";
 $countryresult = mysqli_query($conn, $countrySQL);
@@ -39,9 +29,13 @@ while ($row = $accountResult->fetch_assoc()) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "GET"){
+    if(isset($_POST['Submit']) && empty($_POST['fname']) && empty($_POST['sname']) && empty($_POST['addr']) && empty($_POST['city']) && empty($_POST['country']) && empty($_POST['postcode']) && empty($_POST['num']) && empty($_POST['email'])){
+        echo "Not all Field are Filled in";
+    }
+    else {
 
-        // User Info
-        $title = $_REQUEST['titleselect'];
+        // Getting the data from the form
+        
         $forname = $_REQUEST['fname'];
         $surname = $_REQUEST['sname'];
         $address1 = $_REQUEST['addr'];
@@ -49,29 +43,24 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
         $city = $_REQUEST['city'];
         $country = $_REQUEST['country'];
         $postcode = $_REQUEST['postcode'];
-        $number = $_REQUEST['m-num'];
+        $number = $_REQUEST['num'];
         $email = $_REQUEST['email'];
 
+        echo "all fields are filled in";
 
+        $sql1 = "INSERT INTO address (addressline1, addressline2, city, country, postcode) VALUES ('$address1', '$address2', '$city', '$country', '$postcode');";
+        $sql2 = "INSERT INTO customer (forname, surname, address, contactNumber, email, accountID)  VALUES ('$forname', '$surname', LAST_INSERT_ID(), '$number', '$email', '$accountID')";
 
-
-        $sql1 = "INSERT INTO customer (title, forname, surname, address_ID, contactNumber, email, account_ID) VALUES ('$title', '$forname', '$surname', LAST_INSERT_ID(), '$number', '$email', '$accountID')";
-
-        $sql2 = "INSERT INTO address (addressline1, addressline2, city, country, postcode) VALUES ('$address1', '$address2', '$city', '$country', '$postcode')";
-
-        $conn->query($sql2);
-
-        $conn->query($sql1);
-
-        if(!$conn->commit()){
-            echo "Commit transaction failed";
-            exit();
+        if($conn->query($sql1) === TRUE && $conn->query($sql2) === TRUE) {
+            echo "New recored ha sbeen created";
+            header("Location: splashscreen.php");
         } else {
-            echo "Commit transaction successfull";
-            header("Location: splashscreen.html");
+            echo "Erro: " . $sql1 . "<br>" . $conn->error;
         }
 
-        $conn->close();
+    }
+    session_destroy();
+    $conn->close();
 }
 ?>
 <!doctype html>
@@ -98,22 +87,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
 
         <p>Good Day <?php echo $username ?> We jsut need a few more detials</p>
 
-
         <form class="row g-3" action="accountDetials.php" method="get">
             <h2>Personal Infomation</h2>
             
-            <!-- Title -->
-            <div class="col-md-2">
-                <label class="form-label" for="titleselect">Title:</label>
-                <select class="form-select" id="titleselect" name="titleselect" required>
-                    <option disabled selected>Title</option>
-                    <?php while($row = mysqli_fetch_array($titleresult)){
-                        echo '<option value="'.$row['title_id'].'">'.$row['titlename'].'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-
             <!-- Forname -->
             <div class="col-md-5">
                 <label for="fname" class="form-label">First Name</label>
@@ -131,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
             <!-- Address -->
             <div class="col-12">
                 <label for="address" class="form-label">Address</label>
-                <input type="text" class="form-control" id="address" name="addr"  >
+                <input type="text" class="form-control" id="address" name="addr" require >
             </div>
 
             <!-- Address2 -->
@@ -143,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
             <!-- City -->
             <div class="col-md-6">
                 <label for="city" class="form-label">City</label>
-                <input type="text" class="form-control" id="city" name="city"  >
+                <input type="text" class="form-control" id="city" name="city" require  >
             </div>
 
             <!-- Country -->
@@ -161,32 +137,26 @@ if ($_SERVER["REQUEST_METHOD"] == "GET"){
             <!-- Postcode -->
             <div class="col-md-2">
                 <label for="inputZip" class="form-label">Zip/PostCode</label>
-                <input type="text" class="form-control" id="postcode" name="postcode"  >
+                <input type="text" class="form-control" id="postcode" name="postcode" require >
             </div>
 
             <!-- Contact -->
             <h2>Contact Infomation</h2>
 
-            <!-- Home Number -->
-            <div class="col-md-4">
+            <!-- Contact Number -->
+            <div class="col-md-6">
                 <label for="hnumber" class="form-label">Home Number</label>
-                <input type="number" class="form-control" id="hnumber" name="h-num"> 
-            </div>
-
-            <!-- Mobile Number -->
-            <div class="col-md-4">
-                <label for="mnumber" class="form-label">Mobile Number</label>
-                <input type="number" class="form-control" id="mnumber" name="m-num"  >
+                <input type="number" class="form-control" id="hnumber" name="num" require> 
             </div>
 
             <!-- Email -->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email"  >
+                <input type="email" class="form-control" id="email" name="email" require >
             </div>
 
             <div class="col-12">
-                <button type="submit" value="Submit" class="btn btn-primary">Create Account</button>
+                <button type="submit" value="Submit" name="Submit" class="btn btn-primary">Create Account</button>
             </div>
         </form>
     </div>
