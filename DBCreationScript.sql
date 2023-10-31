@@ -1,16 +1,10 @@
--- Creating the database
+-- Stepping Into History DB --
+
 DROP DATABASE IF EXISTS stepintohistoryv2;
 CREATE DATABASE IF NOT EXISTS stepintohistoryv2;
 USE stepintohistoryv2;
 
------- Customer Related ------
- 
-CREATE TABLE titles (
-    titleID int NOT NULL AUTO_INCREMENT,
-    title varchar(50) NOT NULL,
-    PRIMARY KEY (titleID)
-);
-
+-- Customer Related --
 CREATE Table city (
     cityID int NOT NULL AUTO_INCREMENT,
     cityName varchar(50) NOT NULL,
@@ -36,13 +30,11 @@ CREATE TABLE address (
 
 CREATE TABLE customer (
     customerID int NOT NULL AUTO_INCREMENT,
-    title int(11) NOT NULL,
     name varchar(100) NOT NULL,
     address int(11) NOT NULL,
     number int(11) NOT NULL,
     email varchar(100) NOT NULL,
     PRIMARY KEY (customerID),
-    FOREIGN KEY (title) REFERENCES titles(titleID),
     FOREIGN KEY (address) REFERENCES address(addressID)
 );
 
@@ -56,7 +48,7 @@ CREATE TABLE account (
     FOREIGN KEY (customer) REFERENCES customer(customerID)
 );
 
-------- Books and Docs Related ----
+-- Books and Docs Related --
 
 CREATE TABLE publishers (
     publisherID int NOT NULL AUTO_INCREMENT,
@@ -110,8 +102,7 @@ CREATE TABLE library (
     FOREIGN KEY (docID) REFERENCES documents(docID)
 );
 
-
---- Product / Serices Related ---
+-- Product / Serices Related --
 
 CREATE TABLE accsesType (
     accsesTypeID int NOT NULL AUTO_INCREMENT,
@@ -208,7 +199,7 @@ CREATE TABLE products (
     PRIMARY KEY (productID)
 );
 
-CREATE TABLE devivery (
+CREATE TABLE delivery (
     deliveryID int NOT NULL AUTO_INCREMENT,
     deliveryType varchar(50) NOT NULL,
     PRIMARY KEY (deliveryID)
@@ -228,28 +219,24 @@ CREATE TABLE subscriptionOrder (
     delivery int(11) NOT NULL,
     PRIMARY KEY (subOrderID),
     FOREIGN KEY (subscription) REFERENCES subscription(subID),
-    FOREIGN KEY (delivery) REFERENCES devivery(deliveryID)
+    FOREIGN KEY (delivery) REFERENCES delivery(deliveryID)
 );
+
+
 
 CREATE TABLE Orders (
     orderID int NOT NULL AUTO_INCREMENT,
     productType int(11) NOT NULL,
     productOrder int(11) NOT NULL,
-    orderDate date NOT NULL,
+    orderDate date NOT NULL DEFAULT CURRENT_TIMESTAMP,
     customerID int(11) NOT NULL,
-    PRIMARY KEY (orderID),
-    FOREIGN KEY (productType) REFERENCES products(productID),
-    FOREIGN KEY (customerID) REFERENCES customer(customerID),
-    FOREIGN KEY (productOrder) REFERENCES dna(dnaID),
-    FOREIGN KEY (productOrder) REFERENCES familyTree(familyTreeID),
-    FOREIGN KEY (productOrder) REFERENCES tour(tourID),
-    FOREIGN KEY (productOrder) REFERENCES workshopandcourse(workshopID),
-    FOREIGN KEY (productOrder) REFERENCES lecture(lectureID)  
+    PRIMARY KEY (orderID)
 );
 
---- INSERT STATMENTS ---
-INSERT INTO accsesType (accsesTypeID, accsesType) VALUES (1, 'In-Person');
-INSERT INTO accsesType (accsesTypeID, accsesType) VALUES (2, 'Remote');
+-- INSERT STATMENTS --
+
+INSERT INTO accsesType (accsesType) VALUES ('In-Person');
+INSERT INTO accsesType (accsesType) VALUES ('Remote');
 INSERT INTO products (productName) VALUES ('DNA Testing');
 INSERT INTO products (productName) VALUES ('Family Tree');
 INSERT INTO products (productName) VALUES ('Guided Tour');
@@ -260,11 +247,11 @@ INSERT INTO devivery (deliveryType) VALUES ('Phyiscal');
 INSERT INTO devivery (deliveryType) VALUES ('Digital');
 
 
----- Create Procedures for Data Insertion ----
+-- Create Procedures for Data Insertion --
 
--- Cusomter Procedure
+-- Cusomter --
 DELIMITER //
-CREATE PROCEDURE insertCustomerInfo(titleType VARCHAR(15), name VARCHAR(50), address VARCHAR(50), city VARCHAR(50), country VARCHAR(50), postcode VARCHAR(10), contactNumber VARCHAR(50), email VARCHAR(50))
+CREATE PROCEDURE insertCustomerInfo(name VARCHAR(50), address VARCHAR(50), city VARCHAR(50), country VARCHAR(50), postcode VARCHAR(10), contactNumber VARCHAR(50), email VARCHAR(50))
 BEGIN
     IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
         INSERT INTO country (countryName) VALUES (country);
@@ -272,215 +259,198 @@ BEGIN
     IF (SELECT COUNT(city) FROM city WHERE cityName = city) = 0 THEN
         INSERT INTO city (cityName) VALUES (city);
     END IF;
-    IF (SELECT COUNT(titles) FROM titles WHERE title = titleType) = 0 THEN
-        INSERT INTO titles (title) VALUES (titleType);
-    END IF;
+
     INSERT INTO address (addressLine, city, country, postcode) VALUES (address, (SELECT cityID FROM city WHERE city = cityName), (SELECT countryID FROM country WHERE countryName = country), postcode);
-    INSERT INTO customer (title, name, address, number, email) VALUES ((SELECT titleID FROM titles WHERE titleType = title), name, LAST_INSERT_ID(), contactNumber, email);
+    INSERT INTO customer (name, address, number, email) VALUES (name, LAST_INSERT_ID(), contactNumber, email);
 END
 //
 DELIMITER ;
 
--- Book Procedure
-    DELIMITER //
-    CREATE PROCEDURE insertBookInfo(title VARCHAR(50), author VARCHAR(50), publisher VARCHAR(50), genre VARCHAR(50), description VARCHAR(50), year int(4), price DECIMAL(10,2))
-    BEGIN
-        -- Check if the Author already exist in the database
-        IF (SELECT COUNT(authorName) FROM authors WHERE author = authorName) = 0 THEN
-            INSERT INTO authors (authorName) VALUES (author);
-        END IF;
+-- Book
+DELIMITER //
+CREATE PROCEDURE insertBookInfo(title VARCHAR(50), author VARCHAR(50), publisher VARCHAR(50), genre VARCHAR(50), description VARCHAR(50), year int(4), price DECIMAL(10,2))
+BEGIN
+	-- Check if the Author already exist in the database
+	IF (SELECT COUNT(authorName) FROM authors WHERE author = authorName) = 0 THEN
+		INSERT INTO authors (authorName) VALUES (author);
+	END IF;
 
-        -- Check if the Publisher already exist in the database
-        IF (SELECT COUNT(publisherName) FROM publishers WHERE publisherName = publisher) = 0 THEN
-            INSERT INTO publishers (publisherName) VALUES (publisher);
-        END IF;
+	-- Check if the Publisher already exist in the database
+	IF (SELECT COUNT(publisherName) FROM publishers WHERE publisherName = publisher) = 0 THEN
+		INSERT INTO publishers (publisherName) VALUES (publisher);
+	END IF;
 
-        -- Check if the Genre already exist in the database
-        IF (SELECT COUNT(genreName) FROM genres WHERE genreName = genre) = 0 THEN
-            INSERT INTO genres (genreName) VALUES (genre);
-        END IF;
+	-- Check if the Genre already exist in the database
+	IF (SELECT COUNT(genreName) FROM genres WHERE genreName = genre) = 0 THEN
+		INSERT INTO genres (genreName) VALUES (genre);
+	END IF;
         
-        -- Insert the book into the database
-        INSERT INTO book (title, author, publisher, genre, description, year, price) VALUES (title, (SELECT authorID FROM authors WHERE author = authorName), (SELECT publisherID FROM publishers WHERE publisherName = publisher), (SELECT genreID FROM genres WHERE genreName = genre), description, year, price);
+	-- Insert the book into the database
+	INSERT INTO books (title, author, publisher, genre, description, year, price) VALUES (title, (SELECT authorID FROM authors WHERE author = authorName), (SELECT publisherID FROM publishers WHERE publisherName = publisher), (SELECT genreID FROM genres WHERE genreName = genre), description, year, price);
      
-        -- Insert the book into the library
-        INSERT INTO library (book) VALUES (LAST_INSERT_ID());
-    End
-    //
-    DELIMITER ;
+	-- Insert the book into the library
+	INSERT INTO library (bookID) VALUES (LAST_INSERT_ID());
+End
+//
+DELIMITER ;
 
--- Document Procedure
-    DELIMITER //
-    CREATE PROCEDURE insertDocInfo(title VARCHAR(50), author VARCHAR(50), description VARCHAR(50), year INT(4))
-    BEGIN
-        -- Check if the Author already exist in the database
-        IF (SELECT COUNT(authorName) FROM author WHERE authorName = author) = 0 THEN
-            INSERT INTO author (authorName) VALUES (author);
-        END IF;
-        -- Insert the document into the database
-        INSERT INTO document (title, author, description, year) VALUES (title, (SELECT authorID         FROM author WHERE authorName = author), description, year);
+-- Document
+DELIMITER //
+CREATE PROCEDURE insertDocInfo(title VARCHAR(50), author VARCHAR(50), description VARCHAR(50), year INT(4))
+BEGIN
+	-- Check if the Author already exist in the database
+	IF (SELECT COUNT(authorName) FROM authors WHERE authorName = author) = 0 THEN
+		INSERT INTO authors (authorName) VALUES (author);
+	END IF;
+        
+	-- Insert the document into the database
+	INSERT INTO documents (title, author, description, year) VALUES (title, (SELECT authorID FROM authors WHERE authorName = author), description, year);
 
-        -- Insert the document into the library
-        INSERT INTO library (document) VALUES (LAST_INSERT_ID());
-    End
-    //
-    DELIMITER ;
+	-- Insert the document into the library
+	INSERT INTO library (docID) VALUES (LAST_INSERT_ID());
+End
+//
+DELIMITER ;
 
--- DNA Procedure
-    DELIMITER //
-    CREATE PROCEDURE bookingDNA(CustomerName VARCHAR (50), datebooking DATE, serviceaccses VARCHAR(10), cost DECIMAL(10,2))
-    BEGIN
-
-        insert into dna (date, price, serviceAccess) values (datebooking, cost, (select accsesTypeID from accsesType where accsesType = serviceaccses));
-
-        insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'DNA Testing'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
-    END
-    //
-    DELIMITER ;
+-- DNA Booking
+DELIMITER //
+CREATE PROCEDURE bookingDNA(CustomerName VARCHAR (50), datebooking DATE, serviceaccses VARCHAR(10))
+BEGIN
+    insert into dna (date, price, serviceAccess) values (datebooking, 24.99, (select accsesTypeID from accsestype where accsesType = serviceaccses));
+    insert into orders (productType, productOrder, customerID) values ((select productID from products where productName = 'DNA Testing'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
+END
+//
+DELIMITER ;
 
 -- Family Tree Procedure
-    DELIMITER //
-    CREATE PROCEDURE bookingTree(CustomerName VARCHAR (50), datebooking DATE, serviceaccses VARCHAR(10), cost DECIMAL(10,2))
-    BEGIN
+DELIMITER //
+CREATE PROCEDURE bookingTree(CustomerName VARCHAR (50), datebooking DATE, serviceaccses VARCHAR(10))
+BEGIN
+    INSERT INTO familytree (date, price, serviceAccess) values (datebooking, 21.99, (select accsesTypeID from accsestype where accsesType = serviceaccses));
 
-        insert into familyTree (date, price, serviceAccess) values (datebooking, cost, (select accsesTypeID from accsesType where accsesType = serviceaccses));
-
-        insert into orders (productType, ProdcutOrderID, orderDate, customerID) values ((select productID from products where productName = 'Family Tree'), LAST_INSERT_ID(), datebooking, (select customerID from customer where name = CustomerName));
-    END
-    //
-    DELIMITER ;
+    INSERT INTO orders (productType, productOrder, customerID) values ((select productID from products where productName = 'Family Tree'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
+END
+//
+DELIMITER ;
 
 -- Tour Procedure
-    DELIMITER //
-    CREATE PROCEDURE insertTourInfo( title VARCHAR(50), tourdate DATE, tourtime TIME, cost DECIMAL(10,2), capacity int(10), country varchar(50), description VARCHAR(255))
-    BEGIN
-        -- Check if the country already exist in the database
-        IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
-            INSERT INTO country (countryName) VALUES (country);
-        END IF;
-
-        -- Insert the tour into the database
-        INSERT INTO tour (title, date, time, price, capacity, location, description) VALUES (title, tourdate, tourtime, cost, capacity, (SELECT countryID FROM country WHERE countryName = country), description);
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE insertTourInfo( title VARCHAR(50), tourdate DATE, tourtime TIME, cost DECIMAL(10,2), capacity int(10), country varchar(50), description VARCHAR(255))
+BEGIN
+    -- Check if the country already exist in the database
+    IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
+        INSERT INTO country (countryName) VALUES (country);
+    END IF;
+    -- Insert the tour into the database
+    INSERT INTO tour (title, date, time, price, capacity, location, description) VALUES (title, tourdate, tourtime, cost, capacity, (SELECT countryID FROM country WHERE countryName = country), description);
+END
+//
+DELIMITER ;
 
 -- TourBooking Procedure
-    DELIMITER //
-    CREATE PROCEDURE bookingTour( tourOption VARCHAR(50), CustomerName VARCHAR(50))
-    BEGIN
+DELIMITER //
+CREATE PROCEDURE bookingTour( tourOption VARCHAR(50), CustomerName VARCHAR(50))
+BEGIN
 
-        insert into TourBooking (tour) values ((SELECT tourID WHERE tour = tourOption));
+    insert into TourBooking (tour) values ((SELECT tourID FROM tour WHERE tourOption = title));
 
-        insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'Guided Tour'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
-    END
-    //
-    DELIMITER ;
+    insert into orders (productType, productOrder, customerID) values ((select productID from products where productName = 'Guided Tour'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
+END
+//
+DELIMITER ;
 
 -- Wrkshop Procedure
-    DELIMITER //
-    CREATE PROCEDURE insertwrkshopInfo( wrktitle VARCHAR(50), wrkdate DATE, wrktime TIME, cost DECIMAL(10,2), capacity int(10), country varchar(50), description VARCHAR(255))
-    BEGIN
-        -- Check if the country already exist in the database
-        IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
-            INSERT INTO country (countryName) VALUES (country);
-        END IF;
-
-        -- Insert the tour into the database
-        INSERT INTO workshopandcourse (title, date, time, price, capacity, location, description) VALUES (wrktitle, wrkdate, wrktime, cost, capacity, (SELECT countryID FROM country WHERE countryName = country), description);
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE insertwrkshopInfo( wrktitle VARCHAR(50), wrkdate DATE, wrktime TIME, cost DECIMAL(10,2), capacity int(10), country varchar(50), description VARCHAR(255))
+BEGIN
+    -- Check if the country already exist in the database
+    IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
+        INSERT INTO country (countryName) VALUES (country);
+    END IF;
+    -- Insert the tour into the database
+    INSERT INTO workshopandcourse (title, date, time, price, capacity, location, description) VALUES (wrktitle, wrkdate, wrktime, cost, capacity, (SELECT countryID FROM country WHERE countryName = country), description);
+END
+//
+DELIMITER ;
 
 -- Wrkshop Booking Procedure
-    DELIMITER //
-    CREATE PROCEDURE bookingWrk( wrkOption VARCHAR(50), CustomerName VARCHAR(50))
-    BEGIN
-
-        insert into workshopBooking (workshop) values (wrkOption);
-
-        insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'Workshop & Course'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE bookingWrk( wrkOption VARCHAR(50), CustomerName VARCHAR(50))
+BEGIN
+    insert into workshopBooking (workshop) values ((SELECT workshopID FROM workshopandcourse WHERE wrkOption = title));
+    insert into orders (productType, productOrder, customerID) values ((select productID from products where productName = 'Workshop & Course'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
+END
+//
+DELIMITER ;
 
 -- Lecture Procedure
-    DELIMITER //
-    CREATE PROCEDURE insertLectureInfo( lectitle VARCHAR(50), speaker varchar(50) , lecdate DATE, lectime TIME, cost DECIMAL(10,2), description VARCHAR(255))
-    BEGIN
-        -- Check if the country already exist in the database
-        IF (SELECT COUNT(country) FROM country WHERE countryName = country) = 0 THEN
-            INSERT INTO country (countryName) VALUES (country);
-        END IF;
-
-        -- Check if the speaker already exist in the database
-        IF (SELECT COUNT(speakerName) FROM speaker WHERE speakerName = speaker) = 0 THEN
-            INSERT INTO speaker (speakerName) VALUES (speaker);
-        END IF;
-
-        -- Insert the tour into the database
-        INSERT INTO lecture (title, speaker ,date, time, price, capacity, location, description) VALUES (lectitle, (SELECT speakerID FROM speaker WHERE speaker = speakerName) ,lecdate, lectime, cost,description);
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE insertLectureInfo( lectitle VARCHAR(50), speakers varchar(50) , lecdate DATE, lectime TIME, cost DECIMAL(10,2), description VARCHAR(255))
+BEGIN
+    -- Check if the speaker already exist in the database
+    IF (SELECT COUNT(speakers) FROM speaker WHERE speakers = name) = 0 THEN
+        INSERT INTO speaker (name) VALUES (speakers);
+    END IF;
+    -- Insert the tour into the database
+    INSERT INTO lecture (title, speaker ,date, time, price, description) VALUES (lectitle, (SELECT speakerID FROM speaker WHERE speaker = name) ,lecdate, lectime, cost,description);
+END
+//
+DELIMITER ;
 
 -- Lecture Booking Procedure
-    DELIMITER //
-    CREATE PROCEDURE bookinglecture( lecOption VARCHAR(50), CustomerName VARCHAR(50))
-    BEGIN
-
-        insert into lectureBooking (lecture) values (lecOption);
-
-        insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'Workshop & Course'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE bookinglecture( lecOption VARCHAR(50), CustomerName VARCHAR(50))
+BEGIN
+    insert into lectureBooking (lecture) values (lecOption);
+    insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'Workshop & Course'), LAST_INSERT_ID(), (select customerID from customer where name = CustomerName));
+END
+//
+DELIMITER ;
 
 -- Subscription Procedure
-    DELIMITER //
-    CREATE PROCEDURE subscriptionInfo(title VARCHAR(50), version int(10), cost DECIMAL(10,2))
-    BEGIN
-        insert into subscription (title, version, price) values (title, version, cost);
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE subscriptionInfo(title VARCHAR(50), version int(10), cost DECIMAL(10,2))
+BEGIN
+    insert into subscription (title, version, price) values (title, version, cost);
+END
+//
+DELIMITER ;
 
 -- Subscription Order Procedure
-    DELIMITER //
-    CREATE PROCEDURE orderSubscription(version int(11), deviverytype VARCHAR(25)), Name VARCHAR(50))
-    BEGIN
-        insert into subscriptionOrder (subscription, delivery) values (version, (select deliveryID from devivery where deliveryType = deviverytype));
-
-        insert into orders (productType, ProdcutOrderID, customerID) values ((select productID from products where productName = 'Subscription'), LAST_INSERT_ID(), (select customerID from customer where name = Name));
-    END
-    //
-    DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE orderSubscription(versionNum int(11), dType VARCHAR(25), cusName VARCHAR(50))
+BEGIN
+    INSERT INTO subscriptionOrder (subscription, delivery) VALUES ((SELECT subID from subscription WHERE version = versionNum), (select deliveryID from delivery where deliveryType = dType));
+    Insert INTO Orders (productType, productOrder, customerID) VALUES ((select productID from products where productName = 'Subscription'), LAST_INSERT_ID(), (select customerID from customer where name = cusName));
+END
+//
+DELIMITER ;
 
 --- Inserting of Dummy Data ---
 
 -- Book Dummy Data
-CALL insertBookInfo('The Rise and Fall of the Roman Empire', 'Edward Gibbon', 'Penguin Classics', 'Ancient History', 'A comprehensive account of the Roman Empire and its eventual decline.', 1776, 19.99);
-CALL insertBookInfo('The Crusades: A Short History', 'Jonathan Riley-Smith', 'Yale University Press', 'Medieval History', 'An overview of the medieval Crusades and their impact on history.', 2008, 15.99);
-CALL insertBookInfo('A People''s History of the United States', 'Howard Zinn', 'Harper Perennial', 'American History', 'A different perspective on U.S. history, focusing on the experiences of everyday people.', 1980, 12.99);
-CALL insertBookInfo('The Origins of Political Order', 'Francis Fukuyama', 'Farrar, Straus and Giroux', 'Political History', 'Exploring the development of political institutions from prehistoric times to the French Revolution.', 2011, 22.99);
-CALL insertBookInfo('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'Harper', 'World History', 'An exploration of the history of the human species, from early humans to the present.', 2014, 18.99);
-CALL insertBookInfo('The Guns of August', 'Barbara W. Tuchman', 'Presidio Press', 'Military History', 'A detailed account of the events leading up to World War I.', 1962, 17.99);
-CALL insertBookInfo('The Wright Brothers', 'David McCullough', 'Simon & Schuster', 'Biographical History', 'A biography of the Wright brothers and their invention of the first powered airplane.', 2015, 16.99);
-CALL insertBookInfo('A History of Western Philosophy', 'Bertrand Russell', 'Routledge', 'Philosophy', 'A comprehensive history of Western philosophy from the pre-Socratic philosophers to the mid-20th century.', 1945, 21.99);
-CALL insertBookInfo('A Short History of Nearly Everything', 'Bill Bryson', 'Broadway Books', 'Science History', 'An engaging journey through the history of science and the universe.', 2003, 14.99);
-CALL insertBookInfo('The Silk Roads: A New History of the World', 'Peter Frankopan', 'Knopf', 'World History', 'An exploration of the interconnected history of the Silk Roads and their impact on the world.', 2015, 19.99);
-CALL insertBookInfo('The Making of Europe: Conquest, Colonization and Cultural Change, 950-1350', 'Robert Bartlett', 'Penguin Books', 'Medieval History', 'An examination of the transformation of Europe in the Middle Ages.', 1993, 16.99);
-CALL insertBookInfo('The Age of Extremes: A History of the World, 1914-1991', 'Eric Hobsbawm', 'Vintage', '20th Century History', 'A global history of the tumultuous 20th century.', 1994, 20.99);
-CALL insertBookInfo('Genghis Khan and the Making of the Modern World', 'Jack Weatherford', 'Broadway Books', 'Biographical History', 'A biography of Genghis Khan and his impact on world history.', 2004, 15.99);
-CALL insertBookInfo('1491: New Revelations of the Americas Before Columbus', 'Charles C. Mann', 'Vintage', 'American History', 'Reexamining the history of the Americas before the arrival of Columbus.', 2005, 14.99);
-CALL insertBookInfo('The Story of Art', 'E.H. Gombrich', 'Phaidon Press', 'Art History', 'An accessible and comprehensive history of art from ancient times to the present.', 1950, 18.99);
-CALL insertBookInfo('The Birth of the West: Rome, Germany, France, and the Creation of Europe in the Tenth Century', 'Paul Collins', 'PublicAffairs', 'Medieval History', 'A look at the development of Europe in the 10th century.', 2013, 16.99);
-CALL insertBookInfo('A Little History of the World', 'E.H. Gombrich', 'Yale University Press', 'World History', 'An engaging history of the world written for younger readers and adults alike.', 1935, 12.99);
-CALL insertBookInfo('The Reformation: A History', 'Diarmaid MacCulloch', 'Viking', 'Religious History', 'A detailed account of the Protestant Reformation and its impact on Christianity.', 2003, 21.99);
-CALL insertBookInfo('A Short History of Myth', 'Karen Armstrong', 'Canongate Books', 'Mythology', 'Exploring the history and significance of myth in human culture.', 2005, 13.99);
-CALL insertBookInfo('The Path Between the Seas: The Creation of the Panama Canal, 1870-1914', 'David McCullough', 'Simon & Schuster', '20th Century History', 'A history of the construction of the Panama Canal.', 1977, 19.99);
-CALL insertBookInfo('The History of the Ancient World: From the Earliest Accounts to the Fall of Rome', 'Susan Bauer', 'W. W. Norton & Company', 'Ancient History', 'A comprehensive history of the ancient world.', 2007, 15.99);
-CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', 'T.J. Stiles', 'Vintage', 'Biographical History', 'A biography of Cornelius Vanderbilt and his role in shaping American transportation and industry.', 2009, 18.99);
+    CALL insertBookInfo('The Rise and Fall of the Roman Empire', 'Edward Gibbon', 'Penguin Classics', 'Ancient History', 'A comprehensive account of the Roman Empire and its eventual decline.', 1776, 19.99);
+    CALL insertBookInfo('The Crusades: A Short History', 'Jonathan Riley-Smith', 'Yale University Press', 'Medieval History', 'An overview of the medieval Crusades and their impact on history.', 2008, 15.99);
+    CALL insertBookInfo('A People''s History of the United States', 'Howard Zinn', 'Harper Perennial', 'American History', 'A different perspective on U.S. history, focusing on the experiences of everyday people.', 1980, 12.99);
+    CALL insertBookInfo('The Origins of Political Order', 'Francis Fukuyama', 'Farrar, Straus and Giroux', 'Political History', 'Exploring the development of political institutions from prehistoric times to the French Revolution.', 2011, 22.99);
+    CALL insertBookInfo('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'Harper', 'World History', 'An exploration of the history of the human species, from early humans to the present.', 2014, 18.99);
+    CALL insertBookInfo('The Guns of August', 'Barbara W. Tuchman', 'Presidio Press', 'Military History', 'A detailed account of the events leading up to World War I.', 1962, 17.99);
+    CALL insertBookInfo('The Wright Brothers', 'David McCullough', 'Simon & Schuster', 'Biographical History', 'A biography of the Wright brothers and their invention of the first powered airplane.', 2015, 16.99);
+    CALL insertBookInfo('A History of Western Philosophy', 'Bertrand Russell', 'Routledge', 'Philosophy', 'A comprehensive history of Western philosophy from the pre-Socratic philosophers to the mid-20th century.', 1945, 21.99);
+    CALL insertBookInfo('A Short History of Nearly Everything', 'Bill Bryson', 'Broadway Books', 'Science History', 'An engaging journey through the history of science and the universe.', 2003, 14.99);
+    CALL insertBookInfo('The Silk Roads: A New History of the World', 'Peter Frankopan', 'Knopf', 'World History', 'An exploration of the interconnected history of the Silk Roads and their impact on the world.', 2015, 19.99);
+    CALL insertBookInfo('The Making of Europe: Conquest, Colonization and Cultural Change, 950-1350', 'Robert Bartlett', 'Penguin Books', 'Medieval History', 'An examination of the transformation of Europe in the Middle Ages.', 1993, 16.99);
+    CALL insertBookInfo('The Age of Extremes: A History of the World, 1914-1991', 'Eric Hobsbawm', 'Vintage', '20th Century History', 'A global history of the tumultuous 20th century.', 1994, 20.99);
+    CALL insertBookInfo('Genghis Khan and the Making of the Modern World', 'Jack Weatherford', 'Broadway Books', 'Biographical History', 'A biography of Genghis Khan and his impact on world history.', 2004, 15.99);
+    CALL insertBookInfo('1491: New Revelations of the Americas Before Columbus', 'Charles C. Mann', 'Vintage', 'American History', 'Reexamining the history of the Americas before the arrival of Columbus.', 2005, 14.99);
+    CALL insertBookInfo('The Story of Art', 'E.H. Gombrich', 'Phaidon Press', 'Art History', 'An accessible and comprehensive history of art from ancient times to the present.', 1950, 18.99);
+    CALL insertBookInfo('The Birth of the West: Rome, Germany, France, and the Creation of Europe in the Tenth Century', 'Paul Collins', 'PublicAffairs', 'Medieval History', 'A look at the development of Europe in the 10th century.', 2013, 16.99);
+    CALL insertBookInfo('A Little History of the World', 'E.H. Gombrich', 'Yale University Press', 'World History', 'An engaging history of the world written for younger readers and adults alike.', 1935, 12.99);
+    CALL insertBookInfo('The Reformation: A History', 'Diarmaid MacCulloch', 'Viking', 'Religious History', 'A detailed account of the Protestant Reformation and its impact on Christianity.', 2003, 21.99);
+    CALL insertBookInfo('A Short History of Myth', 'Karen Armstrong', 'Canongate Books', 'Mythology', 'Exploring the history and significance of myth in human culture.', 2005, 13.99);
+    CALL insertBookInfo('The Path Between the Seas: The Creation of the Panama Canal, 1870-1914', 'David McCullough', 'Simon & Schuster', '20th Century History', 'A history of the construction of the Panama Canal.', 1977, 19.99);
+    CALL insertBookInfo('The History of the Ancient World: From the Earliest Accounts to the Fall of Rome', 'Susan Bauer', 'W. W. Norton & Company', 'Ancient History', 'A comprehensive history of the ancient world.', 2007, 15.99);
+    CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', 'T.J. Stiles', 'Vintage', 'Biographical History', 'A biography of Cornelius Vanderbilt and his role in shaping American transportation and industry.', 2009, 18.99);
 
 -- Documets Dummy Data
     CALL insertDocInfo('The Universal Declaration of Human Rights', 'United Nations', 'A document that proclaims the basic rights and freedoms to which all people are entitled', 1948);
@@ -498,7 +468,7 @@ CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', '
     CALL insertDocInfo('The Declaration of the Rights of Man and of the Citizen', 'National Assembly of France', 'A fundamental document of the French Revolution, asserting individual and collective rights', 1789);
     CALL insertDocInfo('The Treaty of Rome', 'Various', 'The treaty that established the European Economic Community (EEC), precursor to the European Union', 1957);
     CALL insertDocInfo('The Treaty of Lisbon', 'Various', 'A treaty that reformed the constitutional basis of the European Union', 2007);
-    CALL insertDocInfo('The Geneva Conventions', 'International Committee of the Red Cross', 'A set of international treaties that govern the treatment of wounded and sick combatants, prisoners of war, and civilians in wartime', Various);
+    CALL insertDocInfo('The Geneva Conventions', 'International Committee of the Red Cross', 'A set of international treaties that govern the treatment of wounded and sick combatants, prisoners of war, and civilians in wartime', 502);
     CALL insertDocInfo('The Articles of Confederation', 'Continental Congress', 'The first constitution of the United States, adopted during the American Revolution', 1777);
     CALL insertDocInfo('The United Nations Universal Declaration on Cultural Diversity', 'United Nations', 'A declaration emphasizing the importance of cultural diversity and dialogue', 2001);
     CALL insertDocInfo('The Kyoto Protocol', 'United Nations', 'An international treaty aimed at reducing greenhouse gas emissions', 1997);
@@ -518,50 +488,49 @@ CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', '
     CALL insertDocInfo('The Paris Agreement', 'United Nations', 'An international treaty on climate change, aiming to limit global warming', 2016);
 
 -- Customer Dummy Data
-        CALL insertCustomerInfo('Mr', 'John Smith', '123 Main St', 'New York', 'USA', '10001', '+1 (123) 456-7890', 'john.smith@gmail.com');
-    CALL insertCustomerInfo('Ms', 'Emily Johnson', '456 Elm St', 'Los Angeles', 'USA', '90001', '+1 (987) 654-3210', 'emily.johnson@yahoo.com');
-    CALL insertCustomerInfo('Dr', 'Michael Brown', '789 Oak St', 'London', 'United Kingdom', 'SW1A 1AA', '+44 20 1234 5678', 'michael.brown@hotmail.com');
-    CALL insertCustomerInfo('Mrs', 'Sarah Davis', '101 Pine St', 'Toronto', 'Canada', 'M5V 2T6', '+1 (416) 555-1234', 'sarah.davis@outlook.com');
-    CALL insertCustomerInfo('Mr', 'David Lee', '234 Cedar St', 'Sydney', 'Australia', '2000', '+61 2 9876 5432', 'david.lee@mail.com');
-    CALL insertCustomerInfo('Ms', 'Maria Rodriguez', '567 Birch St', 'Madrid', 'Spain', '28001', '+34 91 123 45 67', 'maria.rodriguez@icloud.com');
-    CALL insertCustomerInfo('Dr', 'Hans Müller', '890 Maple St', 'Berlin', 'Germany', '10115', '+49 30 987654321', 'hans.mueller@web.de');
-    CALL insertCustomerInfo('Mr', 'Yuki Tanaka', '543 Redwood St', 'Tokyo', 'Japan', '100-0004', '+81 3 1234 5678', 'yuki.tanaka@softbank.ne.jp');
-    CALL insertCustomerInfo('Mrs', 'Giovanni Rossi', '654 Walnut St', 'Rome', 'Italy', '00118', '+39 06 1234 5678', 'giovanni.rossi@libero.it');
-    CALL insertCustomerInfo('Ms', 'Sophie Dupont', '321 Willow St', 'Paris', 'France', '75001', '+33 1 23 45 67 89', 'sophie.dupont@orange.fr');
-    CALL insertCustomerInfo('Dr', 'Carlos Fernandez', '876 Acacia St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'carlos.fernandez@fibertel.com.ar');
-    CALL insertCustomerInfo('Mr', 'Mohamed Ali', '111 Poplar St', 'Cairo', 'Egypt', '11511', '+20 2 1234 5678', 'mohamed.ali@link.net');
-    CALL insertCustomerInfo('Mrs', 'Marta Kowalski', '222 Elm St', 'Warsaw', 'Poland', '00-001', '+48 22 123 45 67', 'marta.kowalski@wp.pl');
-    CALL insertCustomerInfo('Ms', 'Juan Lopez', '333 Oak St', 'Mexico City', 'Mexico', '06500', '+52 55 1234 5678', 'juan.lopez@prodigy.net.mx');
-    CALL insertCustomerInfo('Dr', 'Chen Wei', '444 Pine St', 'Shanghai', 'China', '200000', '+86 21 1234 5678', 'chen.wei@qq.com');
-    CALL insertCustomerInfo('Mr', 'Ivan Petrov', '555 Cedar St', 'Moscow', 'Russia', '101000', '+7 495 123-45-67', 'ivan.petrov@mail.ru');
-    CALL insertCustomerInfo('Mrs', 'Sara Silva', '666 Redwood St', 'Sao Paulo', 'Brazil', '01323-000', '+55 11 1234-5678', 'sara.silva@terra.com.br');
-    CALL insertCustomerInfo('Ms', 'Muhammad Khan', '777 Birch St', 'Karachi', 'Pakistan', '75500', '+92 21 12345678', 'muhammad.khan@hotmail.com.pk');
-    CALL insertCustomerInfo('Dr', 'Ali Hassan', '888 Willow St', 'Cairo', 'Egypt', '11511', '+20 2 1234 5678', 'ali.hassan@tedata.net.eg');
-    CALL insertCustomerInfo('Mr', 'Maria Lopez', '999 Maple St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'maria.lopez@fibertel.com.ar');
-    CALL insertCustomerInfo('Mrs', 'Jiro Tanaka', '100 Acacia St', 'Tokyo', 'Japan', '100-0004', '+81 3 1234 5678', 'jiro.tanaka@docomo.ne.jp');
-    CALL insertCustomerInfo('Ms', 'Sophie Dupuis', '111 Poplar St', 'Paris', 'France', '75001', '+33 1 23 45 67 89', 'sophie.dupuis@laposte.net');
-    CALL insertCustomerInfo('Dr', 'Carlos Rodriguez', '222 Elm St', 'Madrid', 'Spain', '28001', '+34 91 123 45 67', 'carlos.rodriguez@telefonica.es');
-    CALL insertCustomerInfo('Mr', 'Giovanni Rossi', '333 Oak St', 'Rome', 'Italy', '00118', '+39 06 1234 5678', 'giovanni.rossi@fastweb.it');
-    CALL insertCustomerInfo('Mrs', 'Hans Müller', '444 Pine St', 'Berlin', 'Germany', '10115', '+49 30 987654321', 'hans.mueller@t-online.de');
-    CALL insertCustomerInfo('Ms', 'Maria Lopez', '555 Cedar St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'maria.lopez@arnet.com.ar');
-    CALL insertCustomerInfo('Dr', 'Chen Wei', '666 Redwood St', 'Shanghai', 'China', '200000', '+86 21 1234 5678', 'chen.wei@163.com');
-    CALL insertCustomerInfo('Mr', 'Ivan Petrov', '777 Birch St', 'Moscow', 'Russia', '101000', '+7 495 123-45-67', 'ivan.petrov@mail.ru');
-    CALL insertCustomerInfo('Mrs', 'Sara Silva', '888 Willow St', 'Sao Paulo', 'Brazil', '01323-000', '+55 11 1234-5678', 'sara.silva@terra.com.br');
-    CALL insertCustomerInfo('Ms', 'Muhammad Khan', '999 Maple St', 'Karachi', 'Pakistan', '75500', '+92 21 12345678', 'muhammad.khan@hotmail');
+    CALL insertCustomerInfo('John Smith', '123 Main St', 'New York', 'USA', '10001', '+1 (123) 456-7890', 'john.smith@gmail.com');
+    CALL insertCustomerInfo('Emily Johnson', '456 Elm St', 'Los Angeles', 'USA', '90001', '+1 (987) 654-3210', 'emily.johnson@yahoo.com');
+    CALL insertCustomerInfo('Michael Brown', '789 Oak St', 'London', 'United Kingdom', 'SW1A 1AA', '+44 20 1234 5678', 'michael.brown@hotmail.com');
+    CALL insertCustomerInfo( 'Sarah Davis', '101 Pine St', 'Toronto', 'Canada', 'M5V 2T6', '+1 (416) 555-1234', 'sarah.davis@outlook.com');
+    CALL insertCustomerInfo('David Lee', '234 Cedar St', 'Sydney', 'Australia', '2000', '+61 2 9876 5432', 'david.lee@mail.com');
+    CALL insertCustomerInfo('Maria Rodriguez', '567 Birch St', 'Madrid', 'Spain', '28001', '+34 91 123 45 67', 'maria.rodriguez@icloud.com');
+    CALL insertCustomerInfo('Hans Müller', '890 Maple St', 'Berlin', 'Germany', '10115', '+49 30 987654321', 'hans.mueller@web.de');
+    CALL insertCustomerInfo('Yuki Tanaka', '543 Redwood St', 'Tokyo', 'Japan', '100-0004', '+81 3 1234 5678', 'yuki.tanaka@softbank.ne.jp');
+    CALL insertCustomerInfo( 'Giovanni Rossi', '654 Walnut St', 'Rome', 'Italy', '00118', '+39 06 1234 5678', 'giovanni.rossi@libero.it');
+    CALL insertCustomerInfo('Sophie Dupont', '321 Willow St', 'Paris', 'France', '75001', '+33 1 23 45 67 89', 'sophie.dupont@orange.fr');
+    CALL insertCustomerInfo('Carlos Fernandez', '876 Acacia St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'carlos.fernandez@fibertel.com.ar');
+    CALL insertCustomerInfo('Mohamed Ali', '111 Poplar St', 'Cairo', 'Egypt', '11511', '+20 2 1234 5678', 'mohamed.ali@link.net');
+    CALL insertCustomerInfo( 'Marta Kowalski', '222 Elm St', 'Warsaw', 'Poland', '00-001', '+48 22 123 45 67', 'marta.kowalski@wp.pl');
+    CALL insertCustomerInfo('Juan Lopez', '333 Oak St', 'Mexico City', 'Mexico', '06500', '+52 55 1234 5678', 'juan.lopez@prodigy.net.mx');
+    CALL insertCustomerInfo('Chen Wei', '444 Pine St', 'Shanghai', 'China', '200000', '+86 21 1234 5678', 'chen.wei@qq.com');
+    CALL insertCustomerInfo('Ivan Petrov', '555 Cedar St', 'Moscow', 'Russia', '101000', '+7 495 123-45-67', 'ivan.petrov@mail.ru');
+    CALL insertCustomerInfo( 'Sara Silva', '666 Redwood St', 'Sao Paulo', 'Brazil', '01323-000', '+55 11 1234-5678', 'sara.silva@terra.com.br');
+    CALL insertCustomerInfo('Muhammad Khan', '777 Birch St', 'Karachi', 'Pakistan', '75500', '+92 21 12345678', 'muhammad.khan@hotmail.com.pk');
+    CALL insertCustomerInfo('Ali Hassan', '888 Willow St', 'Cairo', 'Egypt', '11511', '+20 2 1234 5678', 'ali.hassan@tedata.net.eg');
+    CALL insertCustomerInfo('Maria Lopez', '999 Maple St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'maria.lopez@fibertel.com.ar');
+    CALL insertCustomerInfo( 'Jiro Tanaka', '100 Acacia St', 'Tokyo', 'Japan', '100-0004', '+81 3 1234 5678', 'jiro.tanaka@docomo.ne.jp');
+    CALL insertCustomerInfo('Sophie Dupuis', '111 Poplar St', 'Paris', 'France', '75001', '+33 1 23 45 67 89', 'sophie.dupuis@laposte.net');
+    CALL insertCustomerInfo('Carlos Rodriguez', '222 Elm St', 'Madrid', 'Spain', '28001', '+34 91 123 45 67', 'carlos.rodriguez@telefonica.es');
+    CALL insertCustomerInfo('Giovanni Rossi', '333 Oak St', 'Rome', 'Italy', '00118', '+39 06 1234 5678', 'giovanni.rossi@fastweb.it');
+    CALL insertCustomerInfo( 'Hans Müller', '444 Pine St', 'Berlin', 'Germany', '10115', '+49 30 987654321', 'hans.mueller@t-online.de');
+    CALL insertCustomerInfo('Maria Lopez', '555 Cedar St', 'Buenos Aires', 'Argentina', 'C1002AAC', '+54 11 1234-5678', 'maria.lopez@arnet.com.ar');
+    CALL insertCustomerInfo('Chen Wei', '666 Redwood St', 'Shanghai', 'China', '200000', '+86 21 1234 5678', 'chen.wei@163.com');
+    CALL insertCustomerInfo('Ivan Petrov', '777 Birch St', 'Moscow', 'Russia', '101000', '+7 495 123-45-67', 'ivan.petrov@mail.ru');
+    CALL insertCustomerInfo( 'Sara Silva', '888 Willow St', 'Sao Paulo', 'Brazil', '01323-000', '+55 11 1234-5678', 'sara.silva@terra.com.br');
+    CALL insertCustomerInfo('Muhammad Khan', '999 Maple St', 'Karachi', 'Pakistan', '75500', '+92 21 12345678', 'muhammad.khan@hotmail');
 
 -- DNA Dummy Data
     CALL bookingDNA('John Smith', '2023-02-15', 'In-Person');
-    CALL bookingDNA('Alice Johnson', '2023-05-28', 'Remote');
     CALL bookingDNA('Michael Brown', '2023-10-29', 'In-Person');
-    CALL bookingDNA('Emily Lee', '2023-01-07', 'Remote');
-    CALL bookingDNA('Robert Garcia', '2023-01-07', 'In-Person');
+    CALL bookingDNA('Sara Silva', '2023-01-07', 'Remote');
+    CALL bookingDNA('Muhammad Khan', '2023-01-07', 'In-Person');
 
 -- Family Tree Dummy Data
-    CALL bookingDNA('William Davis', '2023-02-15', 'In-Person');
-    CALL bookingDNA('Sofia Rodriguez', '2023-05-28', 'Remote');
-    CALL bookingDNA('Ethan Martinez', '2023-10-29', 'In-Person');
-    CALL bookingDNA('Olivia Anderson', '2023-01-07', 'Remote');
-    CALL bookingDNA('Daniel Turner', '2023-01-07', 'In-Person');
+    CALL bookingTree('Ivan Petrov', '2023-02-15', 'In-Person');
+    CALL bookingTree('Maria Lopez', '2023-05-28', 'Remote');
+    CALL bookingTree('Ali Hassan', '2023-10-29', 'In-Person');
+    CALL bookingTree('Chen Wei', '2023-01-07', 'Remote');
+    CALL bookingTree('Muhammad Kha', '2023-01-07', 'In-Person');
 
 -- Tour Info Dummy Data
     CALL insertTourInfo('The Alhambra Palace', '2023-05-10', '09:00 AM', 25.00, 50, 'Spain', 'Explore the stunning Alhambra Palace, a UNESCO World Heritage site known for its Islamic architecture and beautiful gardens.');
@@ -582,10 +551,10 @@ CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', '
 
 -- Tour Booking Dummy Data
     CALL bookingTour('The Alhambra Palace', 'John Smith');
-    CALL bookingTour('Gettysburg Battlefield', 'Alice Johnson');
-    CALL bookingTour('The Louvre Museum', 'Michael Brown');
-    CALL bookingTour('The Colosseum', 'Emily Lee');
-    CALL bookingTour('Machu Picchu', 'Robert Garcia');
+    CALL bookingTour('Gettysburg Battlefield', 'Maria Lopez');
+    CALL bookingTour('The Louvre Museum', 'Ali Hassan');
+    CALL bookingTour('The Colosseum', 'Chen Wei');
+    CALL bookingTour('Machu Picchu', 'Chen Wei');
     
 -- Workshop Info Dummy Data
     CALL insertwrkshopInfo('Introduction to Archaeology', '2023-04-10', '10:00 AM', 50.00, 30, 'USA', 'Learn the basics of archaeological fieldwork and artifact analysis.');
@@ -617,7 +586,7 @@ CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', '
     CALL bookingWrk('Medieval Weaponry Crafting', 'Robert Garcia');
 
 -- Lecture Info Dummy Data
-    CALL insertLectureInfo('The Silk Road: Ancient Trade Routes', 'Dr. Elizabeth Adams', '2023-03-15', '7:00 PM', 20.00, 'Join Dr. Elizabeth Adams as she unravels the history of the Silk Road, one of the worlds most influential trade networks.');
+    CALL insertLectureInfo('The Silk Road: Ancient Trade Routes', 'Dr. Elizabeth Adams', '2023-03-15', '7:00', 20.00, 'Join Dr. Elizabeth Adams as she unravels the history of the Silk Road, one of the worlds most influential trade networks.');
     CALL insertLectureInfo('The Aztec Empire: Rise and Fall', 'Prof. Jonathan Miller', '2023-04-20', '6:30 PM', 15.00, 'Prof. Jonathan Miller discusses the rise and fall of the Aztec Empire, exploring its cultural and historical significance.');
     CALL insertLectureInfo('Exploring Ancient Egypt: Mysteries of the Nile', 'Dr. Victoria White', '2023-05-25', '7:30 PM', 25.00, 'Dr. Victoria White takes you on a journey to explore the mysteries of ancient Egypt and its fascinating civilization.');
     CALL insertLectureInfo('The Crusades: Holy Wars and Their Legacy', 'Prof. Charles Robinson', '2023-06-10', '6:00 PM', 18.00, 'Prof. Charles Robinson delves into the history of the Crusades, examining their impact on religion, culture, and diplomacy.');
