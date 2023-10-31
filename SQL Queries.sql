@@ -95,6 +95,17 @@ INNER JOIN address ON customer.address = address.address_ID
 INNER JOIN countries ON address.country = countries.country_ID;
 
 
+-- Join with Columns renaming
+SELECT customer.customer_ID as 'Customer Number', customer.name as 'Name', address.addressline as 'Address',address.city as 'City', countries.countryname as ' Country', address.postcode as 'Postcode', customer.contactNumber as 'Contact Number', customer.email as 'Email'
+FROM customer
+INNER JOIN address ON customer.address = address.address_ID
+INNER JOIN countries ON address.country = countries.country_ID;
+
+
+-- Select statmetn with Table Aliase
+
+SELECT c.name, c.contactNumber, c.email FROM customer c;
+
 
 --- Books ---
 
@@ -141,6 +152,16 @@ BEGIN
 End
 //
 DELIMITER ;
+
+SELECT author_id FROM author WHERE Name = Bill Bryson
+
+SELECT genre_id FROM genre WHERE genreType = `World History`
+
+SELECT b.title as 'Title', authoer.author as 'Book Author',g.genre as 'Book Genre', b.year
+FROM book b
+INNER JOIN author a ON a.name = a.author_id
+INNER JOIN genre g ON g.genre = g.genre_idID;
+
 
 -- Inserting Dummy Data into the Database
 CALL insertBookInfo('The Rise and Fall of the Roman Empire', 'Edward Gibbon', 'Ancient History', 'A comprehensive account of the Roman Empire and its eventual decline.', 1976, 19.99);

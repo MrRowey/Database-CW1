@@ -1,64 +1,8 @@
-DROP DATABASE IF EXISTS stepintohistory;
-CREATE DATABASE IF NOT EXISTS stepintohistory;
-USE stepintohistory;
-
-CREATE TABLE title (
-    title_id int PRIMARY KEY AUTO_INCREMENT,
-    titlename varchar(50) NOT NULL
-);
-
-INSERT INTO  title (titlename) VALUES ('Mr');
-INSERT INTO  title (titlename) VALUES ('Ms');
-INSERT INTO  title (titlename) VALUES ('Miss');
-INSERT INTO  title (titlename) VALUES ('Mrs');
-
-
-CREATE TABLE name (
-    name_id int PRIMARY KEY AUTO_INCREMENT,
-    forname varchar(50),
-    surname varchar(50)
-);
-
-CREATE TABLE address (
-    address_id int PRIMARY KEY AUTO_INCREMENT,
-    addressline1 varchar(50) NOT NULL,
-    addressline2 varchar(50),
-    city varchar(50) NOT NULL,
-    county varchar(50) NOT NULL,
-    postcode varchar(10) NOT NULL
-);
-
-CREATE TABLE countries (
-    country_id int PRIMARY KEY AUTO_INCREMENT,
-    countryname varchar(50) NOT NULL
-);
-
-INSERT INTO countries (countryname) VALUES ('England');
-INSERT INTO countries (countryname) VALUES ('Scotland');
-INSERT INTO countries (countryname) VALUES ('Wales');
-INSERT INTO countries (countryname) VALUES ('Northern Ireland');
-
-
-CREATE TABLE contactdetails (
-    ContactDetails_ID int PRIMARY KEY AUTO_INCREMENT,
-    HomePhone int(20),
-    MobilePhone int(20),
-    Email VARCHAR(50)
-);
-
 CREATE TABLE jobrole (
     job_ID int PRIMARY KEY AUTO_INCREMENT,
     jobtitle VARCHAR(50)
 );
 
-CREATE TABLE customer (
-  customer_ID Int PRIMARY KEY AUTO_INCREMENT,
-  Title varchar(5) NOT NULL,
-  Name varchar(50) NOT NULL,
-  Address int NOT NULL,
-  Contact int NOT NULL,
-  Account_ID int NOT NUll
-);
 
 CREATE TABLE library (
     library_id int PRIMARY KEY AUTO_INCREMENT,
