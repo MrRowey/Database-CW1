@@ -286,13 +286,13 @@ DELIMITER ;
     CREATE PROCEDURE insertBookInfo(title VARCHAR(50), author VARCHAR(50), publisher VARCHAR(50), genre VARCHAR(50), description VARCHAR(50), year int(4), price DECIMAL(10,2))
     BEGIN
         -- Check if the Author already exist in the database
-        IF (SELECT COUNT(authorName) FROM author WHERE authorName = author) = 0 THEN
-            INSERT INTO author (authorName) VALUES (author);
+        IF (SELECT COUNT(authorName) FROM authors WHERE author = authorName) = 0 THEN
+            INSERT INTO authors (authorName) VALUES (author);
         END IF;
 
         -- Check if the Publisher already exist in the database
-        IF (SELECT COUNT(publisherName) FROM publisher WHERE publisherName = publisher) = 0 THEN
-            INSERT INTO publisher (publisherName) VALUES (publisher);
+        IF (SELECT COUNT(publisherName) FROM publishers WHERE publisherName = publisher) = 0 THEN
+            INSERT INTO publishers (publisherName) VALUES (publisher);
         END IF;
 
         -- Check if the Genre already exist in the database
@@ -301,7 +301,7 @@ DELIMITER ;
         END IF;
         
         -- Insert the book into the database
-        INSERT INTO book (title, author, publisher, genre, description, year, price) VALUES (title, (SELECT authorID FROM author WHERE authorName = author), (SELECT publisherID FROM publisher WHERE publisherName = publisher), (SELECT genreID FROM genres WHERE genreName = genre), description, year, price);
+        INSERT INTO book (title, author, publisher, genre, description, year, price) VALUES (title, (SELECT authorID FROM authors WHERE author = authorName), (SELECT publisherID FROM publishers WHERE publisherName = publisher), (SELECT genreID FROM genres WHERE genreName = genre), description, year, price);
      
         -- Insert the book into the library
         INSERT INTO library (book) VALUES (LAST_INSERT_ID());
@@ -459,41 +459,28 @@ DELIMITER ;
 --- Inserting of Dummy Data ---
 
 -- Book Dummy Data
-    CALL insertBookInfo('The Guns of August', 'Barbara W. Tuchman', 'Macmillan', 'History', 'A detailed analysis of the events leading to World War I', 1962, 18.99);
-    CALL insertBookInfo('A People’s History of the United States', 'Howard Zinn', 'Harper & Row', 'American History', 'A critical look at U.S. history from the perspective of marginalized groups', 1980, 19.99);
-    CALL insertBookInfo('The Second World War', 'Sir Winston Churchill', 'Houghton Mifflin', 'World War II History', 'A firsthand account of the events during World War II', 1948, 22.99);
-    CALL insertBookInfo('The Rise and Fall of the Third Reich', 'William L. Shirer', 'Simon & Schuster', 'World War II History', 'A comprehensive history of Nazi Germany', 1960, 21.99);
-    CALL insertBookInfo('The Wright Brothers', 'David McCullough', 'Simon & Schuster', 'Aviation History', 'The story of the inventors of the first successful airplane', 2015, 20.99);
-    CALL insertBookInfo('The Guns, 1914-1916', 'Ian Hogg', 'Greenhill Books', 'World War I History', 'An examination of artillery during World War I', 1998, 17.99);
-    CALL insertBookInfo('The Box: How the Shipping Container Made the World Smaller and the World Economy Bigger', 'Marc Levinson', 'Princeton University Press', 'Economic History', 'The impact of shipping containers on global trade', 2006, 18.99);
-    CALL insertBookInfo('Genghis Khan and the Making of the Modern World', 'Jack Weatherford', 'Crown Publishers', 'Mongol Empire History', 'The influence of Genghis Khan on world history', 2004, 19.99);
-    CALL insertBookInfo('The Wright Brothers', 'Tom D. Crouch', 'W.W. Norton & Company', 'Aviation History', 'A biography of the pioneering aviators', 2003, 17.99);
-    CALL insertBookInfo('The Silk Roads: A New History of the World', 'Peter Frankopan', 'Bloomsbury Publishing', 'World History', 'A reexamination of world history through the lens of the Silk Road', 2015, 21.99);
-    CALL insertBookInfo('Einstein: His Life and Universe', 'Walter Isaacson', 'Simon & Schuster', 'Biography', 'A biography of the renowned physicist Albert Einstein', 2007, 20.99);
-    CALL insertBookInfo('Citizens: A Chronicle of the French Revolution', 'Simon Schama', 'Penguin Books', 'French Revolution History', 'A comprehensive history of the French Revolution', 1989, 18.99);
-    CALL insertBookInfo('The Warmth of Other Suns', 'Isabel Wilkerson', 'Random House', 'African American History', 'The Great Migration and its impact on America', 2010, 22.99);
-    CALL insertBookInfo('The Wright Brothers', 'James Tobin', 'Henry Holt and Co.', 'Aviation History', 'A biography of the pioneering aviators', 2003, 19.99);
-    CALL insertBookInfo('The Emperor of All Maladies: A Biography of Cancer', 'Siddhartha Mukherjee', 'Scribner', 'Medical History', 'The history of cancer and its treatment', 2010, 21.99);
-    CALL insertBookInfo('The Devil in the White City', 'Erik Larson', 'Crown Publishers', 'American History', 'A tale of architecture and serial murder at the 1893 Worlds Fair', 2003, 18.99);
-    CALL insertBookInfo('King Leopolds Ghost', 'Adam Hochschild', 'Houghton Mifflin', 'Colonial History', 'The exploitation of the Congo under King Leopold II', 1998, 19.99);
-    CALL insertBookInfo('The Prize: The Epic Quest for Oil, Money, and Power', 'Daniel Yergin', 'Free Press', 'Economic History', 'The history of the oil industry and its impact on geopolitics', 1991, 22.99);
-    CALL insertBookInfo('Destiny of the Republic: A Tale of Madness, Medicine, and the Murder of a President', 'Candice Millard', 'Doubleday', 'American History', 'The assassination of President James A. Garfield', 2011, 20.99);
-    CALL insertBookInfo('The Immortal Life of Henrietta Lacks', 'Rebecca Skloot', 'Crown Publishing', 'Medical History', 'The story of Henrietta Lacks and the HeLa cell line', 2010, 21.99);
-    CALL insertBookInfo('A Brief History of Time', 'Stephen Hawking', 'Bantam Books', 'Cosmology', 'A popular science book on the universe and black holes', 1988, 17.99);
-    CALL insertBookInfo('In the Garden of Beasts', 'Erik Larson', 'Crown Publishers', 'American History', 'The experiences of the American ambassador to Nazi Germany', 2011, 19.99);
-    CALL insertBookInfo('The Wright Brothers', 'Fred C. Kelly', 'Dover Publications', 'Aviation History', 'A biography of the pioneering aviators', 1943, 16.99);
-    CALL insertBookInfo('The History of the Decline and Fall of the Roman Empire', 'Edward Gibbon', 'Various Publishers', 'Ancient History', 'A classic work on the fall of the Roman Empire', 1776, 12.99);
-    CALL insertBookInfo('The Wright Brothers', 'Peter Reese', 'The History Press', 'Aviation History', 'A biography of the pioneering aviators', 2015, 17.99);
-    CALL insertBookInfo('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'Harper', 'Human History', 'A look at the history of Homo sapiens', 2014, 21.99);
-    CALL insertBookInfo('The History of Love', 'Nicole Krauss', 'W.W. Norton & Company', 'Historical Fiction', 'A novel intertwining multiple love stories across time', 2005, 16.99);
-    CALL insertBookInfo('The Path Between the Seas: The Creation of the Panama Canal, 1870-1914', 'David McCullough', 'Simon & Schuster', 'Engineering History', 'The story of building the Panama Canal', 1977, 20.99);
-    CALL insertBookInfo('The Wright Brothers', 'Wilbur Wright', 'Dover Publications', 'Aviation History', 'The story of the inventors of the first successful airplane', 1917, 14.99);
-    CALL insertBookInfo('A History of the World in 10½ Chapters', 'Julian Barnes', 'Jonathan Cape', 'World History', 'A unique take on world history through various narratives', 1989, 15.99);
-    CALL insertBookInfo('The Heart of the Sea: The Tragedy of the Whaleship Essex', 'Nathaniel Philbrick', 'Viking', 'Maritime History', 'The harrowing true story that inspired "Moby-Dick"', 2000, 18.99);
-    CALL insertBookInfo('The Wright Brothers', 'Lewis Helfand', 'Campfire', 'Graphic Novel', 'A graphic novel adaptation of the Wright brothers story', 2013, 13.99);
-    CALL insertBookInfo('The Wright Brothers', 'Alex Woolf', 'Raintree', 'Aviation History', 'A biography of the pioneering aviators', 2014, 16.99);
-    CALL insertBookInfo('The Wright Brothers', 'George E. Chalou', 'The Wright Memorial Foundation', 'Aviation History', 'A biography of the pioneering aviators', 2003, 17.99);
-    CALL insertBookInfo('The Wright Brothers', 'Charles River Editors', 'CreateSpace Independent Publishing Platform', 'Aviation History', 'A concise history of the Wright brothers achievements', 2015, 14.99);
+CALL insertBookInfo('The Rise and Fall of the Roman Empire', 'Edward Gibbon', 'Penguin Classics', 'Ancient History', 'A comprehensive account of the Roman Empire and its eventual decline.', 1776, 19.99);
+CALL insertBookInfo('The Crusades: A Short History', 'Jonathan Riley-Smith', 'Yale University Press', 'Medieval History', 'An overview of the medieval Crusades and their impact on history.', 2008, 15.99);
+CALL insertBookInfo('A People''s History of the United States', 'Howard Zinn', 'Harper Perennial', 'American History', 'A different perspective on U.S. history, focusing on the experiences of everyday people.', 1980, 12.99);
+CALL insertBookInfo('The Origins of Political Order', 'Francis Fukuyama', 'Farrar, Straus and Giroux', 'Political History', 'Exploring the development of political institutions from prehistoric times to the French Revolution.', 2011, 22.99);
+CALL insertBookInfo('Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'Harper', 'World History', 'An exploration of the history of the human species, from early humans to the present.', 2014, 18.99);
+CALL insertBookInfo('The Guns of August', 'Barbara W. Tuchman', 'Presidio Press', 'Military History', 'A detailed account of the events leading up to World War I.', 1962, 17.99);
+CALL insertBookInfo('The Wright Brothers', 'David McCullough', 'Simon & Schuster', 'Biographical History', 'A biography of the Wright brothers and their invention of the first powered airplane.', 2015, 16.99);
+CALL insertBookInfo('A History of Western Philosophy', 'Bertrand Russell', 'Routledge', 'Philosophy', 'A comprehensive history of Western philosophy from the pre-Socratic philosophers to the mid-20th century.', 1945, 21.99);
+CALL insertBookInfo('A Short History of Nearly Everything', 'Bill Bryson', 'Broadway Books', 'Science History', 'An engaging journey through the history of science and the universe.', 2003, 14.99);
+CALL insertBookInfo('The Silk Roads: A New History of the World', 'Peter Frankopan', 'Knopf', 'World History', 'An exploration of the interconnected history of the Silk Roads and their impact on the world.', 2015, 19.99);
+CALL insertBookInfo('The Making of Europe: Conquest, Colonization and Cultural Change, 950-1350', 'Robert Bartlett', 'Penguin Books', 'Medieval History', 'An examination of the transformation of Europe in the Middle Ages.', 1993, 16.99);
+CALL insertBookInfo('The Age of Extremes: A History of the World, 1914-1991', 'Eric Hobsbawm', 'Vintage', '20th Century History', 'A global history of the tumultuous 20th century.', 1994, 20.99);
+CALL insertBookInfo('Genghis Khan and the Making of the Modern World', 'Jack Weatherford', 'Broadway Books', 'Biographical History', 'A biography of Genghis Khan and his impact on world history.', 2004, 15.99);
+CALL insertBookInfo('1491: New Revelations of the Americas Before Columbus', 'Charles C. Mann', 'Vintage', 'American History', 'Reexamining the history of the Americas before the arrival of Columbus.', 2005, 14.99);
+CALL insertBookInfo('The Story of Art', 'E.H. Gombrich', 'Phaidon Press', 'Art History', 'An accessible and comprehensive history of art from ancient times to the present.', 1950, 18.99);
+CALL insertBookInfo('The Birth of the West: Rome, Germany, France, and the Creation of Europe in the Tenth Century', 'Paul Collins', 'PublicAffairs', 'Medieval History', 'A look at the development of Europe in the 10th century.', 2013, 16.99);
+CALL insertBookInfo('A Little History of the World', 'E.H. Gombrich', 'Yale University Press', 'World History', 'An engaging history of the world written for younger readers and adults alike.', 1935, 12.99);
+CALL insertBookInfo('The Reformation: A History', 'Diarmaid MacCulloch', 'Viking', 'Religious History', 'A detailed account of the Protestant Reformation and its impact on Christianity.', 2003, 21.99);
+CALL insertBookInfo('A Short History of Myth', 'Karen Armstrong', 'Canongate Books', 'Mythology', 'Exploring the history and significance of myth in human culture.', 2005, 13.99);
+CALL insertBookInfo('The Path Between the Seas: The Creation of the Panama Canal, 1870-1914', 'David McCullough', 'Simon & Schuster', '20th Century History', 'A history of the construction of the Panama Canal.', 1977, 19.99);
+CALL insertBookInfo('The History of the Ancient World: From the Earliest Accounts to the Fall of Rome', 'Susan Bauer', 'W. W. Norton & Company', 'Ancient History', 'A comprehensive history of the ancient world.', 2007, 15.99);
+CALL insertBookInfo('The First Tycoon: The Epic Life of Cornelius Vanderbilt', 'T.J. Stiles', 'Vintage', 'Biographical History', 'A biography of Cornelius Vanderbilt and his role in shaping American transportation and industry.', 2009, 18.99);
 
 -- Documets Dummy Data
     CALL insertDocInfo('The Universal Declaration of Human Rights', 'United Nations', 'A document that proclaims the basic rights and freedoms to which all people are entitled', 1948);
